@@ -6,24 +6,6 @@ export const GeminiService = {
 
     const { character, theme, ageGroup, moral, extra } = params;
 
-    let selectedModel = 'models/gemini-3.6-flash';
-    try {
-      const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey.trim()}`);
-      if (listRes.ok) {
-        const listData = await listRes.json();
-        const available = listData.models || [];
-        const modernFlash = available.find(m => 
-          m.name.includes('3.') && m.name.includes('flash') && 
-          (m.supportedGenerationMethods || []).includes('generateContent')
-        );
-        if (modernFlash) {
-          selectedModel = modernFlash.name;
-        }
-      }
-    } catch (e) {
-      console.warn('Auto-discovery fallback', e);
-    }
-
     const prompt = `You are a children's storybook author. Write an age-appropriate, heartwarming story for children (${ageGroup}).
 No violence, no scary content, no mature themes.
 
@@ -42,7 +24,7 @@ Respond ONLY with a valid JSON object matching this exact schema:
   "funVocabulary": [{"word": "Word", "definition": "Simple definition"}]
 }`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/${selectedModel}:generateContent?key=${apiKey.trim()}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey.trim()}`;
 
     const response = await fetch(url, {
       method: 'POST',
