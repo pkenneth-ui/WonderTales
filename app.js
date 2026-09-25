@@ -13,9 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const form = document.getElementById('story-form');
   const charInput = document.getElementById('character-input');
-  const themeSelect = document.getElementById('theme-select');
+  
+  const themeDropdownBtn = document.getElementById('theme-dropdown-btn');
+  const themeMenu = document.getElementById('theme-menu');
+  const themeDisplay = document.getElementById('theme-display');
+  const themeValue = document.getElementById('theme-value');
   const customThemeInput = document.getElementById('custom-theme-input');
-  const moralSelect = document.getElementById('moral-select');
+
+  const moralDropdownBtn = document.getElementById('moral-dropdown-btn');
+  const moralMenu = document.getElementById('moral-menu');
+  const moralDisplay = document.getElementById('moral-display');
+  const moralValue = document.getElementById('moral-value');
+
   const extraInput = document.getElementById('extra-input');
   const surpriseBtn = document.getElementById('surprise-btn');
 
@@ -38,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const fontIncreaseBtn = document.getElementById('font-increase-btn');
   const fontDecreaseBtn = document.getElementById('font-decrease-btn');
+
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  const themeToggleIcon = document.getElementById('theme-toggle-icon');
 
   const libraryDrawer = document.getElementById('library-drawer');
   const openLibraryBtn = document.getElementById('open-library-btn');
@@ -64,6 +76,68 @@ document.addEventListener('DOMContentLoaded', () => {
   const verifyGateBtn = document.getElementById('verify-gate-btn');
   const closeGateBtn = document.getElementById('close-gate-btn');
 
+  // Dark / Bedtime Mode
+  const savedTheme = localStorage.getItem('wondertales_theme') || 'light';
+  if (savedTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+    if (themeToggleIcon) themeToggleIcon.textContent = '🌙';
+  } else {
+    document.documentElement.classList.remove('dark');
+    if (themeToggleIcon) themeToggleIcon.textContent = '☀️';
+  }
+
+  themeToggleBtn?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('wondertales_theme', isDark ? 'dark' : 'light');
+    if (themeToggleIcon) themeToggleIcon.textContent = isDark ? '🌙' : '☀️';
+  });
+
+  // Custom Theme Dropdown
+  themeDropdownBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    moralMenu?.classList.add('hidden');
+    themeMenu?.classList.toggle('hidden');
+  });
+
+  document.querySelectorAll('.theme-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const val = opt.dataset.value;
+      if (themeValue) themeValue.value = val;
+      if (themeDisplay) themeDisplay.innerHTML = opt.innerHTML;
+      themeMenu?.classList.add('hidden');
+
+      if (val === 'custom') {
+        customThemeInput?.classList.remove('hidden');
+        customThemeInput?.focus();
+      } else {
+        customThemeInput?.classList.add('hidden');
+      }
+    });
+  });
+
+  // Custom Moral Dropdown
+  moralDropdownBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    themeMenu?.classList.add('hidden');
+    moralMenu?.classList.toggle('hidden');
+  });
+
+  document.querySelectorAll('.moral-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const val = opt.dataset.value;
+      if (moralValue) moralValue.value = val;
+      if (moralDisplay) moralDisplay.innerHTML = opt.innerHTML;
+      moralMenu?.classList.add('hidden');
+    });
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', () => {
+    themeMenu?.classList.add('hidden');
+    moralMenu?.classList.add('hidden');
+  });
+
+  // Voices
   SpeechService.initVoices((voices) => {
     if (!voiceSelect) return;
     voiceSelect.innerHTML = '';
@@ -143,27 +217,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  themeSelect?.addEventListener('change', () => {
-    if (customThemeInput) {
-      if (themeSelect.value === 'custom') {
-        customThemeInput.classList.remove('hidden');
-      } else {
-        customThemeInput.classList.add('hidden');
-      }
-    }
-  });
-
   surpriseBtn?.addEventListener('click', () => {
     const presets = [
-      { char: 'Barnaby the Brave Bunny', theme: 'Enchanted Whispering Woods', moral: 'Kindness and helping friends', extra: 'Carries a leaf backpack' },
-      { char: 'Cosmo the Star-Pup', theme: 'The Sparkling Milky Way', moral: 'Courage to overcome fears', extra: 'Glowing star paws' },
-      { char: 'Finley the Flying Fish', theme: 'The Great Coral Reef Kingdom', moral: 'Sharing and generosity', extra: 'Glides across sea waves' }
+      { char: 'Barnaby the Brave Bunny', theme: 'Enchanted Whispering Woods', themeIcon: '🌲', moral: 'Kindness and helping friends', moralIcon: '💖', extra: 'Carries a leaf backpack' },
+      { char: 'Cosmo the Star-Pup', theme: 'The Sparkling Milky Way', themeIcon: '🚀', moral: 'Courage to overcome fears', moralIcon: '🦁', extra: 'Glowing star paws' },
+      { char: 'Finley the Flying Fish', theme: 'The Great Coral Reef Kingdom', themeIcon: '🐠', moral: 'Sharing and generosity', moralIcon: '🎁', extra: 'Glides across sea waves' }
     ];
     const p = presets[Math.floor(Math.random() * presets.length)];
     if (charInput) charInput.value = p.char;
-    if (themeSelect) themeSelect.value = p.theme;
-    if (moralSelect) moralSelect.value = p.moral;
+    if (themeValue) themeValue.value = p.theme;
+    if (themeDisplay) themeDisplay.innerHTML = `<span>${p.themeIcon}</span> <span>${p.theme}</span>`;
+    if (moralValue) moralValue.value = p.moral;
+    if (moralDisplay) moralDisplay.innerHTML = `<span>${p.moralIcon}</span> <span>${p.moral}</span>`;
     if (extraInput) extraInput.value = p.extra;
+    customThemeInput?.classList.add('hidden');
   });
 
   form?.addEventListener('submit', async (e) => {
@@ -174,15 +241,19 @@ document.addEventListener('DOMContentLoaded', () => {
     loadingCard?.classList.remove('hidden');
     SpeechService.stop();
 
-    const theme = themeSelect?.value === 'custom' ? (customThemeInput?.value || 'Magical World') : (themeSelect?.value || 'Enchanted Woods');
+    let finalTheme = themeValue?.value || 'Enchanted Whispering Woods';
+    if (finalTheme === 'custom') {
+      finalTheme = customThemeInput?.value || 'Magical World';
+    }
+    const finalMoral = moralValue?.value || 'Kindness and helping friends';
     const apiKey = StorageService.getApiKey();
 
     try {
       const story = await GeminiService.generateStory({
         character: charInput ? charInput.value : 'Hero',
-        theme,
+        theme: finalTheme,
         ageGroup: selectedAge,
-        moral: moralSelect ? moralSelect.value : 'Kindness',
+        moral: finalMoral,
         extra: extraInput ? extraInput.value : ''
       }, apiKey);
 
@@ -215,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
       storyParagraphs.style.fontSize = `${currentFontSize}px`;
       story.paragraphs.forEach(p => {
         const pEl = document.createElement('p');
-        pEl.className = 'bg-amber-50/50 p-4 rounded-2xl border border-amber-100/70 shadow-xs';
+        pEl.className = 'bg-amber-50/50 dark:bg-gray-800/60 p-4 rounded-2xl border border-amber-100/70 dark:border-gray-700/50 shadow-xs';
         pEl.textContent = p;
         storyParagraphs.appendChild(pEl);
       });
@@ -225,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
       storyVocab.innerHTML = '';
       (story.funVocabulary || []).forEach(v => {
         const div = document.createElement('div');
-        div.className = 'p-2.5 bg-white rounded-xl border border-indigo-100 shadow-xs';
+        div.className = 'p-2.5 bg-white dark:bg-gray-800 rounded-xl border border-indigo-100 dark:border-gray-700 shadow-xs';
         div.innerHTML = `<strong>✨ ${v.word}</strong>: ${v.definition}`;
         storyVocab.appendChild(div);
       });
@@ -235,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
       discussionQuestionsList.innerHTML = '';
       (story.discussionQuestions || []).forEach(q => {
         const li = document.createElement('li');
-        li.className = 'flex items-start gap-2 bg-white/70 p-2.5 rounded-xl border border-indigo-100';
+        li.className = 'flex items-start gap-2 bg-white/70 dark:bg-gray-800/80 p-2.5 rounded-xl border border-indigo-100 dark:border-gray-700';
         li.innerHTML = `<span>💬</span> <span>${q}</span>`;
         discussionQuestionsList.appendChild(li);
       });
@@ -269,6 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
   playAudioBtn?.addEventListener('click', () => {
     if (!currentStory) return;
     const text = `${currentStory.title}. ${currentStory.paragraphs.join(' ')}. The moral is: ${currentStory.moral}`;
+    SpeechService.rate = speechRate;
     SpeechService.speak(text, 
       () => { 
         playAudioBtn.classList.add('hidden'); 
