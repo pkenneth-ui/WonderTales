@@ -24,7 +24,6 @@ h1, h2, h3, h4, .font-heading {
   font-family: 'Fredoka', cursive, sans-serif;
 }
 
-/* CARD — white in light, dark navy in dark */
 .app-card {
   background-color: #ffffff !important;
   border: 3px solid rgba(255, 255, 255, 0.9);
@@ -35,7 +34,6 @@ body.dark .app-card {
   border-color: #334155 !important;
 }
 
-/* FORCE all text DARK in light mode cards */
 .app-card h2,
 .app-card h3,
 .app-card .card-heading {
@@ -53,7 +51,6 @@ body.dark .app-card {
   color: #1e293b !important;
 }
 
-/* Dark mode overrides */
 body.dark .app-card h2,
 body.dark .app-card h3,
 body.dark .app-card .card-heading {
@@ -71,7 +68,6 @@ body.dark .app-card .card-body-text {
   color: #f1f5f9 !important;
 }
 
-/* Input fields */
 .input-theme {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
@@ -83,7 +79,6 @@ body.dark .input-theme {
   color: #f8fafc !important;
 }
 
-/* Dropdown trigger text */
 .dropdown-trigger-text {
   color: #334155 !important;
 }
@@ -91,7 +86,6 @@ body.dark .dropdown-trigger-text {
   color: #e2e8f0 !important;
 }
 
-/* 3D Amber Button (Create My Story) */
 .btn-3d-amber {
   background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
   color: #ffffff !important;
@@ -111,7 +105,6 @@ body.dark .dropdown-trigger-text {
   box-shadow: 0 2px 4px rgba(180, 83, 9, 0.2);
 }
 
-/* 3D Purple Button (Read Aloud) */
 .btn-3d-purple {
   background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
   color: #ffffff !important;
@@ -130,7 +123,6 @@ body.dark .dropdown-trigger-text {
   border-bottom: 2px solid #4c1d95;
 }
 
-/* 3D Green Button (Surprise Me!) */
 .btn-3d-green {
   background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
   color: #ffffff !important;
@@ -149,7 +141,6 @@ body.dark .dropdown-trigger-text {
   border-bottom: 2px solid #064e3b;
 }
 
-/* Age Group Buttons */
 .age-btn {
   background-color: #f1f5f9 !important;
   color: #334155 !important;
@@ -180,7 +171,6 @@ body.dark .age-btn.active {
   border-color: #fbbf24 !important;
 }
 
-/* Dropdown Menus */
 .custom-dropdown-menu {
   display: none;
   position: absolute;
@@ -204,11 +194,10 @@ body.dark .age-btn.active {
   transition: all 0.15s ease;
 }
 .custom-dropdown-menu .dropdown-item:hover {
-  background-color: #f3e8ff !important; /* soft purple */
+  background-color: #f3e8ff !important;
   color: #6b21a8 !important;
 }
 
-/* Dark mode dropdowns & hovers */
 body.dark .custom-dropdown-menu {
   background-color: #1e293b !important;
   border-color: #334155 !important;
@@ -218,11 +207,10 @@ body.dark .custom-dropdown-menu .dropdown-item {
   color: #f8fafc !important;
 }
 body.dark .custom-dropdown-menu .dropdown-item:hover {
-  background-color: #3730a3 !important; /* bold indigo/purple in dark mode */
+  background-color: #3730a3 !important;
   color: #ffffff !important;
 }
 
-/* Navbar */
 .nav-bar {
   background-color: rgba(255, 255, 255, 0.92) !important;
 }
@@ -230,7 +218,6 @@ body.dark .nav-bar {
   background-color: rgba(15, 23, 42, 0.92) !important;
 }
 
-/* Remove number spinners from parental gate */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -240,9 +227,6 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* ====================================================
-   MOBILE UNIFORMITY & CENTER ALIGNMENT (< 640px)
-   ==================================================== */
 @media (max-width: 639px) {
   #storyStudioCard > div.flex.items-center.justify-between,
   #storybookCard > div.border-b-2 {
