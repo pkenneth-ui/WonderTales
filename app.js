@@ -1,3 +1,16 @@
+import { generateStory } from "./api.js";
+import { 
+  initSpeech, 
+  speakStory, 
+  pauseSpeech, 
+  resumeSpeech, 
+  stopSpeech, 
+  isSpeaking, 
+  isPaused, 
+  getVoices, 
+  setVoice, 
+  setSpeechRate 
+} from "./speech.js";
 import { 
   saveStoryToFavorites, 
   getFavoriteStories, 
@@ -15,11 +28,6 @@ import {
   getFontSizePreference,
   setFontSizePreference
 } from "./storage.js";
-import { setSpeechRate } from "./speech.js";
-
-import { generateStory } from "./api.js";
-import { initSpeech, speakStory, pauseSpeech, resumeSpeech, stopSpeech, isSpeaking, isPaused, getVoices, setVoice } from "./speech.js";
-import { saveStoryToFavorites, getFavoriteStories, getThemePreference, setThemePreference, getStoredApiKey, setStoredApiKey } from "./storage.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initSpeech();
@@ -70,6 +78,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const voiceSelect = document.getElementById("voiceSelect");
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   const themeIcon = document.getElementById("themeIcon");
+
+  // 🔤 Apply Font Size to Story Area
+  function applyStoryFontSize(size) {
+    if (!storyContentArea) return;
+    storyContentArea.classList.remove("text-base", "text-lg", "text-xl", "text-2xl");
+    if (size === "large") storyContentArea.classList.add("text-xl");
+    else if (size === "xlarge") storyContentArea.classList.add("text-2xl");
+    else storyContentArea.classList.add("text-base");
+  }
+
+  applyStoryFontSize(getFontSizePreference());
+
+  // Font size buttons inside Settings
+  document.querySelectorAll(".font-size-btn").forEach(btn => {
+    if (btn.dataset.size === getFontSizePreference()) {
+      btn.classList.add("bg-amber-100", "border-amber-400", "text-amber-800");
+    }
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".font-size-btn").forEach(b => {
+        b.classList.remove("bg-amber-100", "border-amber-400", "text-amber-800");
+      });
+      btn.classList.add("bg-amber-100", "border-amber-400", "text-amber-800");
+      setFontSizePreference(btn.dataset.size);
+      applyStoryFontSize(btn.dataset.size);
+    });
+  });
+
+  // Narration Speed Slider
+  const speedSlider = document.getElementById("speechSpeedSlider");
+  const speedLabel = document.getElementById("speedValueLabel");
+  if (speedSlider && speedLabel) {
+    speedSlider.value = getSpeechSpeed();
+    speedLabel.textContent = `${parseFloat(speedSlider.value).toFixed(1)}x`;
+    speedSlider.addEventListener("input", (e) => {
+      speedLabel.textContent = `${parseFloat(e.target.value).toFixed(1)}x`;
+    });
+  }
 
   // Age group selector
   document.querySelectorAll(".age-btn").forEach(btn => {
@@ -193,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const story = await generateStory({ childName, ageGroup: selectedAge, theme: selectedTheme, world: selectedWorld, moralLesson: selectedMoral });
       currentStoryData = story;
-      renderStory(story, childName);
+      renderStory(story);
       if (window.confetti) window.confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       audioControlsBar?.classList.remove("hidden");
       actionButtonsBar?.classList.remove("hidden");
@@ -317,7 +362,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const ans = parseInt(document.getElementById("parentalMathAnswer")?.value);
     if (ans === parentalSolution) {
       parentalModal?.classList.add("hidden");
+      
       document.getElementById("customApiKeyInput").value = getStoredApiKey();
+      
+      const speedVal = getSpeechSpeed();
+      const speedSliderInput = document.getElementById("speechSpeedSlider");
+      if (speedSliderInput) speedSliderInput.value = speedVal;
+      const speedValLabel = document.getElementById("speedValueLabel");
+      if (speedValLabel) speedValLabel.textContent = `${speedVal.toFixed(1)}x`;
+
+      const lenSelect = document.getElementById("storyLengthSelect");
+      if (lenSelect) lenSelect.value = getStoryLength();
+
+      const langSelect = document.getElementById("languageSelect");
+      if (langSelect) langSelect.value = getLanguagePreference();
+
       settingsModal?.classList.remove("hidden");
     } else {
       alert("Oops! That's not quite right. Try again!");
@@ -325,11 +384,30 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("closeSettingsBtn")?.addEventListener("click", () => settingsModal?.classList.add("hidden"));
+  
+  // Save All Settings
   document.getElementById("saveCustomKeyBtn")?.addEventListener("click", () => {
     const key = document.getElementById("customApiKeyInput")?.value.trim();
+    const speed = parseFloat(document.getElementById("speechSpeedSlider")?.value) || 0.88;
+    const length = document.getElementById("storyLengthSelect")?.value;
+    const lang = document.getElementById("languageSelect")?.value;
+
     setStoredApiKey(key);
+    setSpeechSpeed(speed);
+    setSpeechRate(speed);
+    setStoryLength(length);
+    setLanguagePreference(lang);
+
     settingsModal?.classList.add("hidden");
-    alert("Key saved locally! 🔒");
+    alert("All preferences saved securely! 🌟");
+  });
+
+  // 🗑️ Clear Favorites handler
+  document.getElementById("clearFavoritesBtn")?.addEventListener("click", () => {
+    if (confirm("Are you sure you want to clear all saved favorite stories?")) {
+      clearFavoriteStories();
+      alert("All saved stories cleared! 🧹");
+    }
   });
 
   document.getElementById("privacyBtn")?.addEventListener("click", () => privacyModal?.classList.remove("hidden"));
