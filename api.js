@@ -81,4 +81,28 @@ You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no trip
         systemInstruction: { parts: [{ text: systemInstruction }] },
         generationConfig: {
           temperature: 0.8,
-          topP: 0.
+          topP: 0.95,
+          responseMimeType: "application/json"
+        }
+      })
+    });
+
+    if (!response.ok) {
+      console.warn(`Gemini API error (${response.status}). Using fallback story.`);
+      return getFallbackStory({ childName, ageGroup, theme, world, moralLesson });
+    }
+
+    const data = await response.json();
+    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!rawText) {
+      return getFallbackStory({ childName, ageGroup, theme, world, moralLesson });
+    }
+
+    const cleaned = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
+    return JSON.parse(cleaned);
+  } catch (err) {
+    console.warn("API request failed:", err.message, "— Using fallback story.");
+    return getFallbackStory({ childName, ageGroup, theme, world, moralLesson });
+  }
+}
