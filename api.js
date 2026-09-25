@@ -1,6 +1,5 @@
 import { getStoredApiKey } from "./storage.js";
 
-// Pre-configured default key so the app works automatically
 const DEFAULT_API_KEY = "AQ.Ab8RN6JmMZxi94j032ij9sezewACQGsYQOa8ibPyiFi1-lmbLA";
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent";
 
@@ -8,7 +7,7 @@ export async function generateStory({ childName, ageGroup, theme, world, moralLe
   const apiKey = getStoredApiKey() || DEFAULT_API_KEY;
 
   if (!apiKey || apiKey.trim() === "") {
-    throw new Error("No Gemini API key found. Please open Settings (⚙️) to enter your API key.");
+    throw new Error("No Gemini API key found. Please open Settings to enter your API key.");
   }
 
   const systemInstruction = `You are WonderTales, an award-winning children's author and kindergarten teacher.
@@ -24,22 +23,11 @@ SAFETY RULES:
 You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no triple backticks) matching this exact schema:
 {
   "title": "A fun, magical title",
-  "soundEffect": "A playful onomatopoeia sound to start (e.g., 'Whoosh! Sparkle sparkle!')",
-  "paragraphs": [
-    "First paragraph introducing the adventure...",
-    "Second paragraph building the gentle excitement...",
-    "Third paragraph solving the challenge with the moral lesson...",
-    "Fourth concluding happy ending paragraph..."
-  ],
+  "soundEffect": "A playful onomatopoeia sound to start",
+  "paragraphs": ["First paragraph...", "Second paragraph...", "Third paragraph...", "Fourth paragraph..."],
   "moral": "One clear, positive moral takeaway sentence.",
-  "funVocabulary": [
-    {"word": "Magnificent", "meaning": "Extremely beautiful or wonderful."},
-    {"word": "Curious", "meaning": "Eager to learn and explore new things."}
-  ],
-  "discussionQuestions": [
-    "What would you have done if you were in the story?",
-    "Why was it important to share with friends?"
-  ]
+  "funVocabulary": [{"word": "Magnificent", "meaning": "Extremely beautiful or wonderful."}],
+  "discussionQuestions": ["What would you have done if you were in the story?"]
 }`;
 
   const userPrompt = `Write a magical story for:
@@ -55,11 +43,7 @@ You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no trip
     body: JSON.stringify({
       contents: [{ parts: [{ text: userPrompt }] }],
       systemInstruction: { parts: [{ text: systemInstruction }] },
-      generationConfig: {
-        temperature: 0.8,
-        topP: 0.95,
-        responseMimeType: "application/json"
-      }
+      generationConfig: { temperature: 0.8, topP: 0.95, responseMimeType: "application/json" }
     })
   });
 
@@ -67,10 +51,10 @@ You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no trip
     const errorData = await response.json().catch(() => ({}));
     const message = errorData?.error?.message || `API error (${response.status})`;
     if (response.status === 403 || message.includes("API key")) {
-      throw new Error("Invalid or restricted Gemini API key. Please check your key in Settings (⚙️).");
+      throw new Error("Invalid or restricted API key. Please check Settings.");
     }
     if (response.status === 429) {
-      throw new Error("AI is catching its breath (Rate limit reached). Please wait 30 seconds and try again!");
+      throw new Error("AI is catching its breath! Please wait 30 seconds and try again.");
     }
     throw new Error(message);
   }
@@ -78,9 +62,7 @@ You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no trip
   const data = await response.json();
   const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-  if (!rawText) {
-    throw new Error("The AI returned an empty response. Please try again!");
-  }
+  if (!rawText) throw new Error("The AI returned an empty response. Please try again!");
 
   try {
     const cleaned = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
