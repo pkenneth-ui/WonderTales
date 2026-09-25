@@ -1,3 +1,22 @@
+import { 
+  saveStoryToFavorites, 
+  getFavoriteStories, 
+  clearFavoriteStories,
+  getThemePreference, 
+  setThemePreference, 
+  getStoredApiKey, 
+  setStoredApiKey,
+  getSpeechSpeed,
+  setSpeechSpeed,
+  getStoryLength,
+  setStoryLength,
+  getLanguagePreference,
+  setLanguagePreference,
+  getFontSizePreference,
+  setFontSizePreference
+} from "./storage.js";
+import { setSpeechRate } from "./speech.js";
+
 import { generateStory } from "./api.js";
 import { initSpeech, speakStory, pauseSpeech, resumeSpeech, stopSpeech, isSpeaking, isPaused, getVoices, setVoice } from "./speech.js";
 import { saveStoryToFavorites, getFavoriteStories, getThemePreference, setThemePreference, getStoredApiKey, setStoredApiKey } from "./storage.js";
