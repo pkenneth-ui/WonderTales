@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="py-20 text-center animate-pulse">
         <div class="text-5xl mb-4">🪄</div>
         <p class="font-heading text-2xl font-bold text-purple-600 dark:text-purple-300">Writing a magical adventure for ${childName}...</p>
-        <p class="text-sm text-slate-400 mt-2 font-semibold">Gathering playful words & heartwarming lessons...</p>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 font-semibold">Gathering playful words & heartwarming lessons...</p>
       </div>
     `;
 
@@ -249,30 +249,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderStory(story) {
     const paragraphsHtml = story.paragraphs.map(p => `
-      <p class="text-lg sm:text-xl leading-relaxed text-slate-800 dark:text-slate-100 mb-5 font-medium">${p}</p>
+      <p class="text-lg sm:text-xl leading-relaxed text-slate-800 dark:text-slate-100 mb-5 font-semibold">${p}</p>
     `).join("");
 
     const vocabHtml = (story.funVocabulary || []).map(v => `
-      <span class="inline-block px-3.5 py-1.5 bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 rounded-2xl text-sm font-bold mr-2 mb-2 shadow-sm border border-amber-200">
-        💡 ${v.word}: <span class="font-normal opacity-90">${v.meaning}</span>
+      <span class="inline-block px-3.5 py-1.5 bg-amber-100 dark:bg-amber-900/60 text-amber-950 dark:text-amber-100 rounded-2xl text-sm font-bold mr-2 mb-2 shadow-sm border border-amber-300 dark:border-amber-700">
+        💡 ${v.word}: <span class="font-normal opacity-95">${v.meaning}</span>
       </span>
     `).join("");
 
     const questionsHtml = (story.discussionQuestions || []).map(q => `
-      <li class="text-sm sm:text-base text-slate-700 dark:text-slate-200 mb-2 font-semibold">• ${q}</li>
+      <li class="text-sm sm:text-base text-slate-800 dark:text-slate-200 mb-2 font-bold">• ${q}</li>
     `).join("");
 
     storyContentArea.innerHTML = `
       <div class="w-full text-left">
-        ${story.soundEffect ? `<div class="inline-block px-4 py-1.5 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/50 dark:to-indigo-900/50 text-purple-700 dark:text-purple-200 rounded-full text-sm font-bold mb-4 shadow-sm">✨ ${story.soundEffect}</div>` : ""}
-        <h1 class="font-heading text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-6">${story.title}</h1>
+        ${story.soundEffect ? `<div class="inline-block px-4 py-1.5 bg-purple-100 dark:bg-purple-900/60 text-purple-900 dark:text-purple-200 rounded-full text-sm font-extrabold mb-4 shadow-sm border border-purple-200 dark:border-purple-700">✨ ${story.soundEffect}</div>` : ""}
+        <h1 class="font-heading text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">${story.title}</h1>
         <div class="story-body mb-8">${paragraphsHtml}</div>
-        <div class="p-5 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 rounded-3xl border-2 border-amber-200 dark:border-amber-900/60 mb-6 shadow-sm">
-          <div class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 mb-1.5">🌱 Moral Lesson</div>
-          <p class="text-base sm:text-lg font-bold text-amber-900 dark:text-amber-100">${story.moral}</p>
+        <div class="p-5 bg-amber-100/80 dark:bg-amber-950/60 rounded-3xl border-2 border-amber-300 dark:border-amber-800/80 mb-6 shadow-sm">
+          <div class="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1.5">🌱 Moral Lesson</div>
+          <p class="text-base sm:text-lg font-bold text-amber-950 dark:text-amber-100">${story.moral}</p>
         </div>
-        ${vocabHtml ? `<div class="mb-6"><div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Vocabulary Explorer</div><div class="flex flex-wrap">${vocabHtml}</div></div>` : ""}
-        ${questionsHtml ? `<div class="p-5 bg-purple-50/70 dark:bg-slate-700/50 rounded-3xl border-2 border-purple-100 dark:border-slate-700 mb-2 shadow-sm"><div class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-300 mb-2.5">Chat About the Story</div><ul class="list-none">${questionsHtml}</ul></div>` : ""}
+        ${vocabHtml ? `<div class="mb-6"><div class="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2.5">Vocabulary Explorer</div><div class="flex flex-wrap">${vocabHtml}</div></div>` : ""}
+        ${questionsHtml ? `<div class="p-5 bg-purple-100/70 dark:bg-slate-700/60 rounded-3xl border-2 border-purple-200 dark:border-slate-600 mb-2 shadow-sm"><div class="text-xs font-black uppercase tracking-wider text-purple-800 dark:text-purple-300 mb-2.5">Chat About the Story</div><ul class="list-none">${questionsHtml}</ul></div>` : ""}
       </div>
     `;
   }
@@ -304,13 +304,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("historyBtn")?.addEventListener("click", () => {
     const favorites = getFavoriteStories();
     if (favorites.length === 0) {
-      historyList.innerHTML = `<p class="text-sm text-slate-400 text-center py-6 font-semibold">No saved stories yet! Generate your first story and click 💾 Save to Favorites.</p>`;
+      historyList.innerHTML = `<p class="text-sm text-slate-500 dark:text-slate-400 text-center py-6 font-semibold">No saved stories yet! Generate your first story and click 💾 Save to Favorites.</p>`;
     } else {
       historyList.innerHTML = favorites.map((s, i) => `
         <div class="p-4 bg-slate-50 dark:bg-slate-700/60 rounded-2xl border-2 border-slate-200 dark:border-slate-600 cursor-pointer hover:bg-amber-50 dark:hover:bg-slate-700 transition-all" data-index="${i}">
-          <div class="font-heading text-base font-bold text-slate-800 dark:text-white mb-1">${s.title}</div>
-          <div class="text-xs text-slate-400 font-semibold">${new Date(s.savedAt).toLocaleDateString()}</div>
-          <div class="text-sm text-slate-600 dark:text-slate-300 mt-1 font-medium line-clamp-2">${s.paragraphs?.[0] || ""}</div>
+          <div class="font-heading text-base font-bold text-slate-900 dark:text-white mb-1">${s.title}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold">${new Date(s.savedAt).toLocaleDateString()}</div>
+          <div class="text-sm text-slate-700 dark:text-slate-300 mt-1 font-medium line-clamp-2">${s.paragraphs?.[0] || ""}</div>
         </div>
       `).join("");
 
