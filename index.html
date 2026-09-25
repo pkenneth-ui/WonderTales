@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>WonderTales — Kids Club Story AI</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,7 +21,7 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen flex flex-col p-3 sm:p-6 lg:p-8 transition-colors duration-300">
+<body class="min-h-screen flex flex-col p-2 sm:p-6 lg:p-8 transition-colors duration-300">
 
   <div class="hidden print:block mb-6 p-4 border-b-2 border-gray-800 text-sm">
     <div class="flex justify-between items-center mb-2">
@@ -34,35 +34,37 @@
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto w-full bg-kids-blue rounded-[2.5rem] shadow-2xl border-4 border-blue-400/30 overflow-hidden flex flex-col print:hidden transition-colors duration-300">
+  <div class="max-w-7xl mx-auto w-full bg-kids-blue rounded-3xl sm:rounded-[2.5rem] shadow-2xl border-2 sm:border-4 border-blue-400/30 overflow-hidden flex flex-col print:hidden transition-colors duration-300">
     
-    <header class="p-5 sm:px-10 flex items-center justify-between border-b border-blue-400/20 text-white">
-      <div class="flex items-center space-x-3">
-        <div class="w-12 h-12 rounded-2xl bg-amber-400 flex items-center justify-center text-3xl shadow-md transform hover:rotate-12 transition">
+    <header class="p-3.5 sm:p-6 lg:px-10 flex items-center justify-between border-b border-blue-400/20 text-white gap-2">
+      <div class="flex items-center space-x-2.5 min-w-0">
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-400 flex items-center justify-center text-2xl sm:text-3xl shadow-md shrink-0">
           😉
         </div>
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-display font-bold tracking-wide">kids club</h1>
-          <p class="text-xs text-blue-200">WonderTales • AI Storybook</p>
+        <div class="min-w-0">
+          <h1 class="text-lg sm:text-2xl font-display font-bold tracking-wide truncate leading-tight">kids club</h1>
+          <p class="text-[10px] sm:text-xs text-blue-200 truncate">WonderTales AI</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <button id="safety-badge-btn" class="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 flex items-center gap-1 hover:bg-emerald-400/30 transition">
-          <span>🛡️</span> <span class="hidden sm:inline">100% Kid-Safe AI</span>
+      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <button id="safety-badge-btn" class="hidden md:flex px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 items-center gap-1">
+          <span>🛡️</span> <span>100% Safe</span>
         </button>
-        <button id="api-key-status-badge" class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40">
-          ⚡ Demo Mode
+        
+        <button id="api-key-status-badge" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40 whitespace-nowrap">
+          ⚡ Demo
         </button>
-        <button id="open-library-btn" class="px-3.5 py-1.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition flex items-center gap-1">
-          📚 Library (<span id="library-count-badge">0</span>)
+        
+        <button id="open-library-btn" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] sm:text-xs font-bold border border-white/20 transition flex items-center gap-1 whitespace-nowrap">
+          <span>📚</span> <span class="hidden sm:inline">Library</span> (<span id="library-count-badge">0</span>)
         </button>
 
-        <button id="theme-toggle-btn" class="p-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition text-base" title="Toggle Day / Bedtime Mode">
+        <button id="theme-toggle-btn" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition flex items-center justify-center text-sm sm:text-base shrink-0" title="Toggle Day / Bedtime Mode">
           <span id="theme-toggle-icon">☀️</span>
         </button>
 
-        <button id="open-settings-btn" class="p-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition" title="Parental Settings">
+        <button id="open-settings-btn" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition flex items-center justify-center text-sm sm:text-base shrink-0" title="Parental Settings">
           ⚙️
         </button>
       </div>
@@ -70,27 +72,27 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
       
-      <div class="lg:col-span-5 p-6 sm:p-10 text-white flex flex-col justify-between">
+      <div class="lg:col-span-5 p-4 sm:p-8 lg:p-10 text-white flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-display font-bold">Create a Story</h2>
-            <button id="surprise-btn" type="button" class="px-4 py-1.5 rounded-full bg-amber-400 hover:bg-amber-300 text-amber-950 text-xs font-bold shadow-md transition transform hover:scale-105">
+            <h2 class="text-xl sm:text-2xl font-display font-bold">Create a Story</h2>
+            <button id="surprise-btn" type="button" class="px-3.5 py-1.5 rounded-full bg-amber-400 hover:bg-amber-300 text-amber-950 text-xs font-bold shadow-md transition transform hover:scale-105 shrink-0">
               🎲 Surprise Me!
             </button>
           </div>
 
-          <form id="story-form" class="space-y-4">
+          <form id="story-form" class="space-y-3.5 sm:space-y-4">
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">Character / Hero</label>
-              <input id="character-input" type="text" required placeholder="e.g. Barnaby the brave rabbit" class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-blue-300/30 text-white placeholder-blue-300 focus:bg-white focus:text-gray-900 focus:outline-hidden transition text-sm">
+              <input id="character-input" type="text" required placeholder="e.g. Barnaby the brave rabbit" class="w-full px-4 py-2.5 sm:py-3 rounded-2xl bg-white/10 border border-blue-300/30 text-white placeholder-blue-300 focus:bg-white focus:text-gray-900 focus:outline-hidden transition text-sm">
             </div>
 
             <div class="relative">
               <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">Theme & World</label>
               <input type="hidden" id="theme-value" value="Enchanted Whispering Woods">
-              <button type="button" id="theme-dropdown-btn" class="w-full px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-blue-300/30 text-white flex items-center justify-between text-sm transition">
-                <span id="theme-display" class="flex items-center gap-2">🌲 Enchanted Whispering Woods</span>
-                <span class="text-xs opacity-75">▼</span>
+              <button type="button" id="theme-dropdown-btn" class="w-full px-4 py-2.5 sm:py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-blue-300/30 text-white flex items-center justify-between text-sm transition">
+                <span id="theme-display" class="flex items-center gap-2 truncate">🌲 Enchanted Whispering Woods</span>
+                <span class="text-xs opacity-75 shrink-0 ml-1">▼</span>
               </button>
 
               <div id="theme-menu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-30 dropdown-menu-animate text-gray-800 text-sm space-y-1">
@@ -119,18 +121,18 @@
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1.5">Age Group</label>
               <div class="grid grid-cols-3 gap-2">
-                <button type="button" data-age="3-5 years (Toddlers)" class="age-pill px-3 py-2 rounded-xl text-xs font-bold border border-white/20 text-white hover:bg-white/10 transition">👶 3–5 yrs</button>
-                <button type="button" data-age="6-8 years (Early Readers)" class="age-pill btn-pill-active px-3 py-2 rounded-xl text-xs font-bold transition">🎒 6–8 yrs</button>
-                <button type="button" data-age="9-12 years (Pre-Teens)" class="age-pill px-3 py-2 rounded-xl text-xs font-bold border border-white/20 text-white hover:bg-white/10 transition">🌟 9–12 yrs</button>
+                <button type="button" data-age="3-5 years (Toddlers)" class="age-pill px-2.5 py-2 rounded-xl text-xs font-bold border border-white/20 text-white hover:bg-white/10 transition">👶 3–5 yrs</button>
+                <button type="button" data-age="6-8 years (Early Readers)" class="age-pill btn-pill-active px-2.5 py-2 rounded-xl text-xs font-bold transition">🎒 6–8 yrs</button>
+                <button type="button" data-age="9-12 years (Pre-Teens)" class="age-pill px-2.5 py-2 rounded-xl text-xs font-bold border border-white/20 text-white hover:bg-white/10 transition">🌟 9–12 yrs</button>
               </div>
             </div>
 
             <div class="relative">
               <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">Moral Lesson</label>
               <input type="hidden" id="moral-value" value="Kindness and helping friends">
-              <button type="button" id="moral-dropdown-btn" class="w-full px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-blue-300/30 text-white flex items-center justify-between text-sm transition">
-                <span id="moral-display" class="flex items-center gap-2">💖 Kindness & Helping Others</span>
-                <span class="text-xs opacity-75">▼</span>
+              <button type="button" id="moral-dropdown-btn" class="w-full px-4 py-2.5 sm:py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-blue-300/30 text-white flex items-center justify-between text-sm transition">
+                <span id="moral-display" class="flex items-center gap-2 truncate">💖 Kindness & Helping Others</span>
+                <span class="text-xs opacity-75 shrink-0 ml-1">▼</span>
               </button>
 
               <div id="moral-menu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-30 dropdown-menu-animate text-gray-800 text-sm space-y-1">
@@ -154,118 +156,118 @@
 
             <div>
               <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">Extra Details (Optional)</label>
-              <textarea id="extra-input" rows="2" placeholder="e.g. He carries a leaf backpack..." class="w-full px-4 py-2.5 rounded-2xl bg-white/10 border border-blue-300/30 text-white placeholder-blue-300 focus:bg-white focus:text-gray-900 focus:outline-hidden transition text-sm resize-none"></textarea>
+              <textarea id="extra-input" rows="2" placeholder="e.g. He carries a leaf backpack..." class="w-full px-4 py-2 rounded-2xl bg-white/10 border border-blue-300/30 text-white placeholder-blue-300 focus:bg-white focus:text-gray-900 focus:outline-hidden transition text-sm resize-none"></textarea>
             </div>
 
-            <button id="generate-btn" type="submit" class="btn-3d-amber w-full py-4 rounded-2xl text-amber-950 font-display font-bold text-lg shadow-xl uppercase tracking-wide">
+            <button id="generate-btn" type="submit" class="btn-3d-amber w-full py-3.5 sm:py-4 rounded-2xl text-amber-950 font-display font-bold text-base sm:text-lg shadow-xl uppercase tracking-wide">
               ✨ Make Magical Story
             </button>
           </form>
         </div>
 
-        <div class="mt-6 pt-4 border-t border-blue-400/20 text-[11px] text-blue-200 flex items-center justify-between">
+        <div class="mt-4 pt-3 border-t border-blue-400/20 text-[11px] text-blue-200 flex items-center justify-between">
           <span>🛡️ Safety by Design Protected</span>
           <span>Google Gemini Flash AI</span>
         </div>
       </div>
 
-      <div class="lg:col-span-7 bg-white dark:bg-[#151c38] p-6 sm:p-10 flex flex-col justify-center rounded-t-[2.5rem] lg:rounded-t-none lg:rounded-l-[3.5rem] shadow-inner transition-colors duration-300">
+      <div class="lg:col-span-7 bg-white dark:bg-[#151c38] p-5 sm:p-10 flex flex-col justify-center rounded-3xl lg:rounded-none lg:rounded-l-[3.5rem] shadow-inner transition-colors duration-300 mt-2 lg:mt-0">
         
-        <div id="empty-placeholder" class="py-6 px-4">
+        <div id="empty-placeholder" class="py-6 px-2 sm:px-4">
           <div class="max-w-md mx-auto text-center space-y-4">
             
-            <div class="relative w-28 h-28 mx-auto">
-              <div class="w-24 h-24 rounded-3xl bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400 flex items-center justify-center text-5xl mx-auto shadow-md animate-float-gentle">
+            <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto">
+              <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400 flex items-center justify-center text-4xl sm:text-5xl mx-auto shadow-md animate-float-gentle">
                 📖
               </div>
-              <div class="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-amber-400 text-white flex items-center justify-center text-sm shadow animate-pulse">
+              <div class="absolute -top-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-400 text-white flex items-center justify-center text-xs sm:text-sm shadow animate-pulse">
                 ✨
               </div>
             </div>
 
             <div>
-              <h3 class="font-display text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Your Storybook Awaits!</h3>
-              <p class="text-gray-500 dark:text-gray-400 text-sm mt-2 leading-relaxed">
+              <h3 class="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Your Storybook Awaits!</h3>
+              <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1.5 leading-relaxed">
                 Choose your hero on the left or tap <strong>Surprise Me!</strong> to weave an AI bedtime tale with warm narration and classroom questions.
               </p>
             </div>
 
             <div class="grid grid-cols-3 gap-2 pt-2">
-              <div class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-700/30 text-center">
-                <span class="text-xl block mb-1">🔊</span>
-                <span class="text-[11px] font-bold text-amber-900 dark:text-amber-300">Read Aloud</span>
+              <div class="p-2.5 sm:p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-700/30 text-center">
+                <span class="text-lg sm:text-xl block mb-0.5">🔊</span>
+                <span class="text-[10px] sm:text-[11px] font-bold text-amber-900 dark:text-amber-300">Read Aloud</span>
               </div>
-              <div class="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200/60 dark:border-indigo-700/30 text-center">
-                <span class="text-xl block mb-1">💡</span>
-                <span class="text-[11px] font-bold text-indigo-900 dark:text-indigo-300">Vocab Explorer</span>
+              <div class="p-2.5 sm:p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200/60 dark:border-indigo-700/30 text-center">
+                <span class="text-lg sm:text-xl block mb-0.5">💡</span>
+                <span class="text-[10px] sm:text-[11px] font-bold text-indigo-900 dark:text-indigo-300">Vocab Explorer</span>
               </div>
-              <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-700/30 text-center">
-                <span class="text-xl block mb-1">🗣️</span>
-                <span class="text-[11px] font-bold text-emerald-900 dark:text-emerald-300">Teacher Chat</span>
+              <div class="p-2.5 sm:p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-700/30 text-center">
+                <span class="text-lg sm:text-xl block mb-0.5">🗣️</span>
+                <span class="text-[10px] sm:text-[11px] font-bold text-emerald-900 dark:text-emerald-300">Teacher Chat</span>
               </div>
             </div>
 
           </div>
         </div>
 
-        <div id="loading-card" class="hidden text-center py-16">
-          <div class="text-6xl animate-bounce mb-4">🪄</div>
-          <h3 class="font-display text-3xl font-bold text-gray-900 dark:text-white">Weaving Magic Words...</h3>
-          <p id="loading-quote" class="text-amber-600 dark:text-amber-400 text-sm font-semibold mt-2">Asking the forest creatures for story ideas...</p>
+        <div id="loading-card" class="hidden text-center py-12 sm:py-16">
+          <div class="text-5xl sm:text-6xl animate-bounce mb-3">🪄</div>
+          <h3 class="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Weaving Magic Words...</h3>
+          <p id="loading-quote" class="text-amber-600 dark:text-amber-400 text-xs sm:text-sm font-semibold mt-2">Asking the forest creatures for story ideas...</p>
         </div>
 
-        <article id="story-card" class="hidden space-y-6">
+        <article id="story-card" class="hidden space-y-5 sm:space-y-6">
           
-          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-100 dark:border-gray-800">
-            <div class="flex items-center space-x-2">
-              <button id="play-audio-btn" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition">🔊 Read Aloud</button>
-              <button id="pause-audio-btn" class="hidden px-4 py-2 rounded-xl bg-amber-600 text-white font-bold text-xs shadow-sm transition">⏸️ Pause</button>
-              <button id="stop-audio-btn" class="px-2.5 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl">⏹️ Stop</button>
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3.5 border-b border-gray-100 dark:border-gray-800">
+            <div class="flex items-center space-x-1.5 sm:space-x-2">
+              <button id="play-audio-btn" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition">🔊 Listen</button>
+              <button id="pause-audio-btn" class="hidden px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-600 text-white font-bold text-xs shadow-sm transition">⏸️ Pause</button>
+              <button id="stop-audio-btn" class="px-2 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl">⏹️</button>
               
-              <select id="voice-select" class="px-2.5 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white max-w-[140px] truncate" title="Choose Voice">
+              <select id="voice-select" class="px-2 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white max-w-[110px] sm:max-w-[140px] truncate" title="Choose Voice">
                 <option value="">Default Voice</option>
               </select>
 
-              <button id="speed-toggle-btn" class="px-2.5 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-300 text-xs font-semibold hover:bg-amber-200 transition">
+              <button id="speed-toggle-btn" class="px-2 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-300 text-xs font-semibold hover:bg-amber-200 transition">
                 🐢 Slow
               </button>
             </div>
 
-            <div class="flex items-center space-x-1.5">
+            <div class="flex items-center space-x-1">
               <div class="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5 text-xs">
-                <button id="font-decrease-btn" class="px-2.5 py-1 font-bold hover:bg-white dark:hover:bg-gray-700 rounded-lg dark:text-white">A-</button>
-                <button id="font-increase-btn" class="px-2.5 py-1 font-bold hover:bg-white dark:hover:bg-gray-700 rounded-lg dark:text-white">A+</button>
+                <button id="font-decrease-btn" class="px-2 py-1 font-bold hover:bg-white dark:hover:bg-gray-700 rounded-lg dark:text-white">A-</button>
+                <button id="font-increase-btn" class="px-2 py-1 font-bold hover:bg-white dark:hover:bg-gray-700 rounded-lg dark:text-white">A+</button>
               </div>
-              <button id="copy-story-btn" class="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs">📋</button>
-              <button id="download-story-btn" class="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs">📥</button>
-              <button id="print-story-btn" class="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs" title="Print Worksheet">🖨️</button>
+              <button id="copy-story-btn" class="p-1.5 sm:p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs">📋</button>
+              <button id="download-story-btn" class="p-1.5 sm:p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs">📥</button>
+              <button id="print-story-btn" class="p-1.5 sm:p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs" title="Print Worksheet">🖨️</button>
             </div>
           </div>
 
           <div class="flex gap-2">
-            <span id="story-age-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">Age</span>
-            <span id="story-theme-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">Theme</span>
+            <span id="story-age-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">Age</span>
+            <span id="story-theme-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">Theme</span>
           </div>
 
-          <h2 id="story-title" class="font-display text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight">Title</h2>
+          <h2 id="story-title" class="font-display text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight">Title</h2>
           
-          <div id="story-paragraphs" class="space-y-4 text-gray-800 dark:text-gray-200 leading-relaxed text-base sm:text-lg"></div>
+          <div id="story-paragraphs" class="space-y-3 sm:space-y-4 text-gray-800 dark:text-gray-200 leading-relaxed text-sm sm:text-lg"></div>
 
-          <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40">
-            <h4 class="font-display font-bold text-amber-950 dark:text-amber-300 text-sm">🌟 Moral of the Story</h4>
-            <p id="story-moral" class="text-amber-900 dark:text-amber-200 text-sm mt-1"></p>
+          <div class="p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40">
+            <h4 class="font-display font-bold text-amber-950 dark:text-amber-300 text-xs sm:text-sm">🌟 Moral of the Story</h4>
+            <p id="story-moral" class="text-amber-900 dark:text-amber-200 text-xs sm:text-sm mt-1"></p>
           </div>
 
           <div id="vocab-container">
-            <h4 class="font-display font-bold text-gray-800 dark:text-gray-200 text-xs mb-2">💡 Fun Words to Learn:</h4>
+            <h4 class="font-display font-bold text-gray-800 dark:text-gray-200 text-xs mb-1.5">💡 Fun Words to Learn:</h4>
             <div id="story-vocab" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
           </div>
 
-          <div id="questions-container" class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/40">
-            <h4 class="font-display font-bold text-indigo-950 dark:text-indigo-300 text-sm mb-2 flex items-center gap-1.5">
+          <div id="questions-container" class="p-3.5 sm:p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/40">
+            <h4 class="font-display font-bold text-indigo-950 dark:text-indigo-300 text-xs sm:text-sm mb-1.5 flex items-center gap-1.5">
               <span>🗣️</span> Teacher Discussion Questions:
             </h4>
-            <ul id="discussion-questions" class="space-y-2 text-xs text-indigo-900 dark:text-indigo-200"></ul>
+            <ul id="discussion-questions" class="space-y-1.5 text-xs text-indigo-900 dark:text-indigo-200"></ul>
           </div>
         </article>
 
@@ -322,7 +324,7 @@
   <aside id="library-drawer" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 p-5 flex flex-col">
     <div class="flex items-center justify-between pb-3 border-b">
       <h3 class="font-bold text-lg font-display">📚 Saved Stories</h3>
-      <button id="close-library-btn" class="text-2xl text-gray-500">&times;</button>
+      <button id="close-library-btn" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
     </div>
     <div id="library-list" class="flex-1 overflow-y-auto py-4 space-y-2"></div>
   </aside>
