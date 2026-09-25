@@ -1,17 +1,43 @@
 import { generateStory } from "./api.js";
 import { initSpeech, speakStory, pauseSpeech, resumeSpeech, stopSpeech, isSpeaking, isPaused, getVoices, setVoice } from "./speech.js";
-import { saveStoryToFavorites, getThemePreference, setThemePreference, getStoredApiKey, setStoredApiKey } from "./storage.js";
+import { saveStoryToFavorites, getFavoriteStories, getThemePreference, setThemePreference, getStoredApiKey, setStoredApiKey } from "./storage.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initSpeech();
 
-  // State variables
+  // State
   let selectedAge = "3-5";
   let selectedTheme = "Adventure & Bravery";
   let selectedWorld = "Whispering Enchanted Forest";
   let selectedMoral = "Helping Others & Empathy";
   let currentStoryData = null;
   let parentalSolution = null;
+
+  // Surprise Me data pools
+  const allThemes = [
+    { val: "Adventure & Bravery", label: "🌟 Adventure & Bravery" },
+    { val: "Friendship & Kindness", label: "🤝 Friendship & Kindness" },
+    { val: "Curiosity & Discovery", label: "🔍 Curiosity & Discovery" },
+    { val: "Magic & Fantasy", label: "✨ Magic & Fantasy" },
+    { val: "Animal Adventures", label: "🐾 Animal Adventures" }
+  ];
+  const allWorlds = [
+    { val: "Whispering Enchanted Forest", label: "🌳 Whispering Enchanted Forest" },
+    { val: "Cosmic Starlight Galaxy", label: "🪐 Cosmic Starlight Galaxy" },
+    { val: "Deep Coral Ocean Kingdom", label: "🐠 Deep Coral Ocean Kingdom" },
+    { val: "Fluffy Cloud City", label: "☁️ Fluffy Cloud City" },
+    { val: "Cozy Backyard Jungle", label: "🏡 Cozy Backyard Jungle" }
+  ];
+  const allMorals = [
+    { val: "Helping Others & Empathy", label: "💖 Helping Others & Empathy" },
+    { val: "Honesty & Telling the Truth", label: "💎 Honesty & Telling the Truth" },
+    { val: "Never Giving Up (Perseverance)", label: "🧗 Never Giving Up" },
+    { val: "Sharing & Teamwork", label: "🤝 Sharing & Teamwork" },
+    { val: "Courage in New Situations", label: "🦁 Courage in New Situations" }
+  ];
+  const allAges = ["3-5", "6-8", "9-12"];
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   // DOM elements
   const storyForm = document.getElementById("storyForm");
@@ -26,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   const themeIcon = document.getElementById("themeIcon");
 
-  // Age group selector (Fixed Permanent Amber Color)
+  // Age group selector
   document.querySelectorAll(".age-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".age-btn").forEach(b => b.classList.remove("active"));
@@ -35,12 +61,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Dropdown helper function
+  // Dropdown helper
   function setupDropdown(btnId, menuId, labelId, onSelect) {
     const btn = document.getElementById(btnId);
     const menu = document.getElementById(menuId);
     const label = document.getElementById(labelId);
-
     btn?.addEventListener("click", (e) => {
       e.stopPropagation();
       document.querySelectorAll(".custom-dropdown-menu").forEach(m => {
@@ -48,13 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       menu?.classList.toggle("open");
     });
-
     menu?.querySelectorAll(".dropdown-item").forEach(item => {
       item.addEventListener("click", () => {
-        const val = item.dataset.val;
         if (label) label.textContent = item.textContent.trim();
         menu.classList.remove("open");
-        onSelect(val);
+        onSelect(item.dataset.val);
       });
     });
   }
@@ -67,7 +90,33 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".custom-dropdown-menu").forEach(m => m.classList.remove("open"));
   });
 
-  // Bedtime Theme Switcher (Sun / Moon)
+  // 🎲 Surprise Me! Button
+  document.getElementById("surpriseMeBtn")?.addEventListener("click", () => {
+    const rTheme = pick(allThemes);
+    const rWorld = pick(allWorlds);
+    const rMoral = pick(allMorals);
+    const rAge = pick(allAges);
+
+    selectedTheme = rTheme.val;
+    selectedWorld = rWorld.val;
+    selectedMoral = rMoral.val;
+    selectedAge = rAge;
+
+    document.getElementById("themeSelectedLabel").textContent = rTheme.label;
+    document.getElementById("worldSelectedLabel").textContent = rWorld.label;
+    document.getElementById("moralSelectedLabel").textContent = rMoral.label;
+
+    document.querySelectorAll(".age-btn").forEach(b => {
+      b.classList.remove("active");
+      if (b.dataset.age === rAge) b.classList.add("active");
+    });
+
+    if (window.confetti) {
+      window.confetti({ particleCount: 40, spread: 50, origin: { y: 0.3 } });
+    }
+  });
+
+  // Bedtime Theme Switcher
   function applyTheme(theme) {
     if (theme === "dark") {
       document.body.classList.add("dark");
@@ -78,9 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Force light mode default unless explicitly dark
-  const currentTheme = getThemePreference();
-  applyTheme(currentTheme);
+  applyTheme(getThemePreference());
 
   themeToggleBtn?.addEventListener("click", () => {
     const isDark = document.body.classList.contains("dark");
@@ -89,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme(newTheme);
   });
 
-  // Warm Teacher Voice population
+  // Voice population
   setTimeout(() => {
     const voices = getVoices();
     if (voiceSelect && voices.length > 0) {
@@ -125,21 +172,10 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     try {
-      const story = await generateStory({
-        childName,
-        ageGroup: selectedAge,
-        theme: selectedTheme,
-        world: selectedWorld,
-        moralLesson: selectedMoral
-      });
-
+      const story = await generateStory({ childName, ageGroup: selectedAge, theme: selectedTheme, world: selectedWorld, moralLesson: selectedMoral });
       currentStoryData = story;
       renderStory(story, childName);
-
-      if (window.confetti) {
-        window.confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-      }
-
+      if (window.confetti) window.confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       audioControlsBar?.classList.remove("hidden");
       actionButtonsBar?.classList.remove("hidden");
     } catch (err) {
@@ -156,14 +192,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Render Story with Larger, Readable Typography
-  function renderStory(story, childName) {
+  // Render Story
+  function renderStory(story) {
     const paragraphsHtml = story.paragraphs.map(p => `
       <p class="text-lg sm:text-xl leading-relaxed text-slate-800 dark:text-slate-100 mb-5 font-medium">${p}</p>
     `).join("");
 
     const vocabHtml = (story.funVocabulary || []).map(v => `
-      <span class="inline-block px-3.5 py-1.5 bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 rounded-2xl text-sm font-bold mr-2 mb-2 shadow-sm border border-amber-200 dark:border-amber-800">
+      <span class="inline-block px-3.5 py-1.5 bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 rounded-2xl text-sm font-bold mr-2 mb-2 shadow-sm border border-amber-200">
         💡 ${v.word}: <span class="font-normal opacity-90">${v.meaning}</span>
       </span>
     `).join("");
@@ -177,26 +213,12 @@ document.addEventListener("DOMContentLoaded", () => {
         ${story.soundEffect ? `<div class="inline-block px-4 py-1.5 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/50 dark:to-indigo-900/50 text-purple-700 dark:text-purple-200 rounded-full text-sm font-bold mb-4 shadow-sm">✨ ${story.soundEffect}</div>` : ""}
         <h1 class="font-heading text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-6">${story.title}</h1>
         <div class="story-body mb-8">${paragraphsHtml}</div>
-        
-        <!-- Moral Lesson Banner -->
         <div class="p-5 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 rounded-3xl border-2 border-amber-200 dark:border-amber-900/60 mb-6 shadow-sm">
           <div class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 mb-1.5">🌱 Moral Lesson</div>
           <p class="text-base sm:text-lg font-bold text-amber-900 dark:text-amber-100">${story.moral}</p>
         </div>
-
-        ${vocabHtml ? `
-          <div class="mb-6">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Vocabulary Explorer</div>
-            <div class="flex flex-wrap">${vocabHtml}</div>
-          </div>
-        ` : ""}
-
-        ${questionsHtml ? `
-          <div class="p-5 bg-purple-50/70 dark:bg-slate-700/50 rounded-3xl border-2 border-purple-100 dark:border-slate-700 mb-2 shadow-sm">
-            <div class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-300 mb-2.5">Chat About the Story</div>
-            <ul class="list-none">${questionsHtml}</ul>
-          </div>
-        ` : ""}
+        ${vocabHtml ? `<div class="mb-6"><div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Vocabulary Explorer</div><div class="flex flex-wrap">${vocabHtml}</div></div>` : ""}
+        ${questionsHtml ? `<div class="p-5 bg-purple-50/70 dark:bg-slate-700/50 rounded-3xl border-2 border-purple-100 dark:border-slate-700 mb-2 shadow-sm"><div class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-300 mb-2.5">Chat About the Story</div><ul class="list-none">${questionsHtml}</ul></div>` : ""}
       </div>
     `;
   }
@@ -204,45 +226,58 @@ document.addEventListener("DOMContentLoaded", () => {
   // Audio Controls
   readAloudBtn?.addEventListener("click", () => {
     if (!currentStoryData) return;
-    if (isSpeaking()) {
-      pauseSpeech();
-      readAloudLabel.textContent = "Resume";
-      return;
-    }
-    if (isPaused()) {
-      resumeSpeech();
-      readAloudLabel.textContent = "Pause";
-      return;
-    }
-
-    const fullText = `${currentStoryData.title}. ${currentStoryData.paragraphs.join(" ")} The moral of the story: ${currentStoryData.moral}`;
-    speakStory(fullText, 
-      () => { readAloudLabel.textContent = "Pause"; },
-      () => { readAloudLabel.textContent = "Read Aloud"; }
-    );
+    if (isSpeaking()) { pauseSpeech(); readAloudLabel.textContent = "Resume"; return; }
+    if (isPaused()) { resumeSpeech(); readAloudLabel.textContent = "Pause"; return; }
+    const fullText = `${currentStoryData.title}. ${currentStoryData.paragraphs.join(" ")} The moral: ${currentStoryData.moral}`;
+    speakStory(fullText, () => { readAloudLabel.textContent = "Pause"; }, () => { readAloudLabel.textContent = "Read Aloud"; });
   });
 
-  stopAudioBtn?.addEventListener("click", () => {
-    stopSpeech();
-    readAloudLabel.textContent = "Read Aloud";
-  });
+  stopAudioBtn?.addEventListener("click", () => { stopSpeech(); readAloudLabel.textContent = "Read Aloud"; });
 
-  // Action Buttons
+  // Save / Print / Copy
   document.getElementById("saveStoryBtn")?.addEventListener("click", () => {
-    if (currentStoryData) {
-      saveStoryToFavorites(currentStoryData);
-      alert("Story saved to your device's favorites! 🌟");
-    }
+    if (currentStoryData) { saveStoryToFavorites(currentStoryData); alert("Story saved to your device's favorites! 🌟"); }
   });
-
   document.getElementById("printStoryBtn")?.addEventListener("click", () => window.print());
-
   document.getElementById("copyStoryBtn")?.addEventListener("click", () => {
     if (!currentStoryData) return;
     const text = `${currentStoryData.title}\n\n${currentStoryData.paragraphs.join("\n\n")}\n\nMoral: ${currentStoryData.moral}`;
     navigator.clipboard.writeText(text);
     alert("Story copied to clipboard! 📋");
   });
+
+  // 📖 History Modal
+  const historyModal = document.getElementById("historyModal");
+  const historyList = document.getElementById("historyList");
+
+  document.getElementById("historyBtn")?.addEventListener("click", () => {
+    const favorites = getFavoriteStories();
+    if (favorites.length === 0) {
+      historyList.innerHTML = `<p class="text-sm text-slate-400 text-center py-6 font-semibold">No saved stories yet! Generate your first story and click 💾 Save to Favorites.</p>`;
+    } else {
+      historyList.innerHTML = favorites.map((s, i) => `
+        <div class="p-4 bg-slate-50 dark:bg-slate-700/60 rounded-2xl border-2 border-slate-200 dark:border-slate-600 cursor-pointer hover:bg-amber-50 dark:hover:bg-slate-700 transition-all" data-index="${i}">
+          <div class="font-heading text-base font-bold text-slate-800 dark:text-white mb-1">${s.title}</div>
+          <div class="text-xs text-slate-400 font-semibold">${new Date(s.savedAt).toLocaleDateString()}</div>
+          <div class="text-sm text-slate-600 dark:text-slate-300 mt-1 font-medium line-clamp-2">${s.paragraphs?.[0] || ""}</div>
+        </div>
+      `).join("");
+
+      historyList.querySelectorAll("[data-index]").forEach(card => {
+        card.addEventListener("click", () => {
+          const story = favorites[parseInt(card.dataset.index)];
+          currentStoryData = story;
+          renderStory(story);
+          audioControlsBar?.classList.remove("hidden");
+          actionButtonsBar?.classList.remove("hidden");
+          historyModal?.classList.add("hidden");
+        });
+      });
+    }
+    historyModal?.classList.remove("hidden");
+  });
+
+  document.getElementById("closeHistoryBtn")?.addEventListener("click", () => historyModal?.classList.add("hidden"));
 
   // Parental Gate & Settings
   const parentalModal = document.getElementById("parentalModal");
@@ -259,7 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("cancelParentalBtn")?.addEventListener("click", () => parentalModal?.classList.add("hidden"));
-
   document.getElementById("submitParentalBtn")?.addEventListener("click", () => {
     const ans = parseInt(document.getElementById("parentalMathAnswer")?.value);
     if (ans === parentalSolution) {
@@ -272,7 +306,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("closeSettingsBtn")?.addEventListener("click", () => settingsModal?.classList.add("hidden"));
-
   document.getElementById("saveCustomKeyBtn")?.addEventListener("click", () => {
     const key = document.getElementById("customApiKeyInput")?.value.trim();
     setStoredApiKey(key);
