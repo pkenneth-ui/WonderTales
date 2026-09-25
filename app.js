@@ -93,13 +93,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // Font size buttons inside Settings
   document.querySelectorAll(".font-size-btn").forEach(btn => {
     if (btn.dataset.size === getFontSizePreference()) {
-      btn.classList.add("bg-amber-100", "border-amber-400", "text-amber-800");
+      btn.classList.add("bg-amber-500", "border-amber-500", "text-white");
+      btn.classList.remove("text-slate-700", "dark:text-slate-200");
     }
     btn.addEventListener("click", () => {
       document.querySelectorAll(".font-size-btn").forEach(b => {
-        b.classList.remove("bg-amber-100", "border-amber-400", "text-amber-800");
+        b.classList.remove("bg-amber-500", "border-amber-500", "text-white");
+        b.classList.add("text-slate-700", "dark:text-slate-200");
       });
-      btn.classList.add("bg-amber-100", "border-amber-400", "text-amber-800");
+      btn.classList.add("bg-amber-500", "border-amber-500", "text-white");
+      btn.classList.remove("text-slate-700", "dark:text-slate-200");
       setFontSizePreference(btn.dataset.size);
       applyStoryFontSize(btn.dataset.size);
     });
