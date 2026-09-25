@@ -7,12 +7,27 @@
 
 body {
   font-family: var(--font-body);
-  background: linear-gradient(135deg, #fef3c7 0%, #fbcfe8 50%, #e0e7ff 100%);
+  background-color: #171d4a;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(167, 139, 250, 0.25) 0%, transparent 25%),
+    radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.2) 0%, transparent 30%),
+    radial-gradient(circle at 50% 10%, rgba(59, 130, 246, 0.3) 0%, transparent 35%);
+  min-height: 100vh;
   color: #1f2937;
 }
 
 .font-display {
   font-family: var(--font-display);
+}
+
+.bg-kids-blue {
+  background-color: #2b59c3;
+}
+
+.btn-pill-active {
+  background-color: #ffffff;
+  color: #2b59c3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-3d-amber {
@@ -29,35 +44,15 @@ body {
   box-shadow: 0 1px 0 #b45309;
 }
 
-.btn-3d-indigo {
-  background: #4f46e5;
-  box-shadow: 0 3px 0 #3730a3;
-  transition: all 0.1s ease;
-}
-.btn-3d-indigo:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 0 #3730a3;
-}
-.btn-3d-indigo:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #3730a3;
-}
-
-.storybook-paper {
-  background-color: #fffdfa;
-  background-image: radial-gradient(#fde68a 0.75px, transparent 0.75px);
-  background-size: 16px 16px;
+.storybook-card {
+  background-color: #ffffff;
+  border-radius: 2.5rem;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.25);
 }
 
 @media print {
   body {
     background: #ffffff !important;
     color: #000000 !important;
-  }
-  .storybook-paper {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
   }
 }
