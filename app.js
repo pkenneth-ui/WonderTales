@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const verifyGateBtn = document.getElementById('verify-gate-btn');
   const closeGateBtn = document.getElementById('close-gate-btn');
 
-  // Dark / Bedtime Mode
   const savedTheme = localStorage.getItem('wondertales_theme') || 'light';
   if (savedTheme === 'dark') {
     document.documentElement.classList.add('dark');
@@ -92,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (themeToggleIcon) themeToggleIcon.textContent = isDark ? '🌙' : '☀️';
   });
 
-  // Custom Theme Dropdown
   themeDropdownBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     moralMenu?.classList.add('hidden');
@@ -115,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Custom Moral Dropdown
   moralDropdownBtn?.addEventListener('click', (e) => {
     e.stopPropagation();
     themeMenu?.classList.add('hidden');
@@ -131,13 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Close dropdowns when clicking outside
   document.addEventListener('click', () => {
     themeMenu?.classList.add('hidden');
     moralMenu?.classList.add('hidden');
   });
 
-  // Voices
   SpeechService.initVoices((voices) => {
     if (!voiceSelect) return;
     voiceSelect.innerHTML = '';
@@ -157,11 +152,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!apiKeyStatusBadge) return;
     const key = StorageService.getApiKey();
     if (key) {
-      apiKeyStatusBadge.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-400/20 text-emerald-200 border border-emerald-400/40';
-      apiKeyStatusBadge.textContent = '✨ Gemini AI Active';
+      apiKeyStatusBadge.className = 'px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-emerald-400/20 text-emerald-200 border border-emerald-400/40 whitespace-nowrap';
+      apiKeyStatusBadge.textContent = '✨ Live';
     } else {
-      apiKeyStatusBadge.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40';
-      apiKeyStatusBadge.textContent = '⚡ Demo Mode';
+      apiKeyStatusBadge.className = 'px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40 whitespace-nowrap';
+      apiKeyStatusBadge.textContent = '⚡ Demo';
     }
   }
 
