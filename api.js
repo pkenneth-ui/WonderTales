@@ -6,11 +6,11 @@ export const GeminiService = {
 
     const { character, theme, ageGroup, moral, extra } = params;
 
-    const prompt = `You are a children's storybook author. Write an age-appropriate, heartwarming story for children (${ageGroup}).
+    const prompt = `You are a warm children's author and educator. Write an age-appropriate story for children (${ageGroup}).
 No violence, no scary content, no mature themes.
 
 Story requirements:
-- Hero / Character: ${character}
+- Hero: ${character}
 - Setting: ${theme}
 - Age: ${ageGroup}
 - Moral Lesson: ${moral}
@@ -21,7 +21,11 @@ Respond ONLY with a valid JSON object matching this exact schema:
   "title": "Story Title",
   "paragraphs": ["First paragraph...", "Second paragraph...", "Third paragraph..."],
   "moral": "The 1-sentence lesson learned",
-  "funVocabulary": [{"word": "Word", "definition": "Simple definition"}]
+  "funVocabulary": [{"word": "Word", "definition": "Simple definition"}],
+  "discussionQuestions": [
+    "Discussion question 1 for the teacher to ask the class",
+    "Discussion question 2 about kindness or problem-solving"
+  ]
 }`;
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey.trim()}`;
@@ -56,6 +60,10 @@ Respond ONLY with a valid JSON object matching this exact schema:
       paragraphs: parsed.paragraphs || [rawText],
       moral: parsed.moral || 'Kindness is magical.',
       funVocabulary: parsed.funVocabulary || [],
+      discussionQuestions: parsed.discussionQuestions || [
+        "What was your favorite part of the story?",
+        "How did the characters work together?"
+      ],
       theme,
       ageGroup
     };
@@ -72,6 +80,10 @@ Respond ONLY with a valid JSON object matching this exact schema:
       ],
       moral: `When you help a friend, the whole world shines brighter (${params.moral || 'Kindness'}).`,
       funVocabulary: [{ word: "Glowing", definition: "Shining with a gentle light." }],
+      discussionQuestions: [
+        `Why did ${char} decide to share his starflower?`,
+        `How does it feel when someone helps you find your way?`
+      ],
       theme: params.theme || 'Enchanted Woods',
       ageGroup: params.ageGroup || '6-8 yrs'
     };
