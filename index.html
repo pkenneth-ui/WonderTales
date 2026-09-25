@@ -11,7 +11,6 @@
 </head>
 <body class="antialiased selection:bg-amber-200">
 
-  <!-- NAVBAR -->
   <nav class="nav-bar backdrop-blur-md sticky top-0 z-40 border-b-2 border-white/30 shadow-md transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       
@@ -51,11 +50,9 @@
     </div>
   </nav>
 
-  <!-- MAIN -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-      <!-- LEFT: FORM -->
       <div id="storyStudioCard" class="app-card lg:col-span-5 rounded-3xl p-6 sm:p-8">
         
         <div class="flex items-center justify-between mb-6">
@@ -143,7 +140,6 @@
         </form>
       </div>
 
-      <!-- RIGHT: STORYBOOK -->
       <div id="storybookCard" class="app-card lg:col-span-7 rounded-3xl p-6 sm:p-9 min-h-[620px] flex flex-col justify-between">
         
         <div class="border-b-2 border-slate-100 pb-4 mb-4 flex items-center justify-between">
@@ -190,7 +186,6 @@
     </div>
   </main>
 
-  <!-- HISTORY MODAL -->
   <div id="historyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border-2 border-indigo-200 dark:border-slate-700 max-h-[80vh] flex flex-col">
       <div class="flex items-center justify-between mb-4">
@@ -206,15 +201,12 @@
     </div>
   </div>
 
-  <!-- MODERN PARENTAL GATE MODAL -->
   <div id="parentalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 transition-all">
     <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-7 max-w-xs sm:max-w-sm w-full shadow-2xl border-2 border-slate-100 dark:border-slate-700/80 text-center relative overflow-hidden">
       
-      <!-- Subtle top background glow -->
       <div class="absolute -top-12 -left-12 w-28 h-28 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
       <div class="absolute -top-12 -right-12 w-28 h-28 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-      <!-- Icon & Header -->
       <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-400/20 to-orange-400/20 border border-amber-300/40 dark:border-amber-400/20 text-amber-500 flex items-center justify-center text-3xl mx-auto mb-3 shadow-sm">
         <i class="fa-solid fa-lock"></i>
       </div>
@@ -222,13 +214,11 @@
       <h3 class="font-heading text-2xl font-bold text-slate-800 dark:text-white">Grown-Ups Only</h3>
       <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold">Solve to unlock parental settings</p>
 
-      <!-- Sleek Math Badge -->
       <div class="my-5 py-3 px-6 bg-slate-100 dark:bg-slate-700/50 rounded-2xl border border-slate-200 dark:border-slate-600/60 inline-flex items-center justify-center gap-3">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Math Check</span>
         <span class="font-heading font-bold text-2xl text-purple-600 dark:text-purple-300 tracking-wide" id="parentalMathQuestion">8 + 9 = ?</span>
       </div>
 
-      <!-- Modern Centered Input -->
       <div class="mb-5">
         <input 
           type="number" 
@@ -239,7 +229,6 @@
         >
       </div>
 
-      <!-- Buttons -->
       <div class="grid grid-cols-2 gap-3">
         <button id="cancelParentalBtn" type="button" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700/70 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-200 font-bold text-sm transition-all cursor-pointer">
           Cancel
@@ -253,7 +242,6 @@
     </div>
   </div>
 
-  <!-- UPGRADED SETTINGS MODAL -->
   <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-slate-200 dark:border-slate-700 max-h-[85vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-4 border-b pb-3 dark:border-slate-700">
@@ -264,7 +252,6 @@
       </div>
 
       <div class="space-y-4">
-        <!-- 🎚️ Narration Speed -->
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="text-sm font-bold text-slate-700 dark:text-slate-200">🎙️ Narration Speed</label>
@@ -278,7 +265,6 @@
           </div>
         </div>
 
-        <!-- 📏 Story Length -->
         <div>
           <label class="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-1">📏 Story Length</label>
           <select id="storyLengthSelect" class="w-full px-3.5 py-2.5 rounded-xl border-2 font-bold text-sm bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-400">
@@ -287,7 +273,6 @@
           </select>
         </div>
 
-        <!-- 🌐 Language Selection -->
         <div>
           <label class="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-1">🌐 Story Language</label>
           <select id="languageSelect" class="w-full px-3.5 py-2.5 rounded-xl border-2 font-bold text-sm bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 border-slate-200 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-400">
@@ -299,7 +284,6 @@
           </select>
         </div>
 
-        <!-- 🔤 Font Size / Reading Mode -->
         <div>
           <label class="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-1">🔤 Reading Font Size</label>
           <div class="grid grid-cols-3 gap-2">
@@ -309,14 +293,12 @@
           </div>
         </div>
 
-        <!-- 🔑 Custom API Key -->
         <div>
           <label class="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-1">🔑 Gemini API Key (Optional)</label>
           <input type="password" id="customApiKeyInput" placeholder="Paste custom Gemini API key" class="w-full px-3.5 py-2.5 rounded-xl border-2 font-mono text-xs bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 border-slate-200 dark:border-slate-600">
           <p class="text-[11px] text-slate-400 mt-1">Stays saved only on this browser.</p>
         </div>
 
-        <!-- 🗑️ Clear Data & Save -->
         <div class="pt-2 border-t dark:border-slate-700 flex justify-between items-center">
           <button type="button" id="clearFavoritesBtn" class="text-xs text-rose-500 hover:text-rose-700 font-bold flex items-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-trash-can"></i> Clear Saved Stories
@@ -327,7 +309,6 @@
     </div>
   </div>
 
-  <!-- PRIVACY MODAL -->
   <div id="privacyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
     <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-emerald-200 dark:border-slate-700">
       <div class="flex items-center justify-between mb-4">
