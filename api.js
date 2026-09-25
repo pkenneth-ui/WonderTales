@@ -5,7 +5,6 @@ const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemi
 
 function getFallbackStory({ childName, ageGroup, theme, world, moralLesson, language }) {
   const isSpanish = language === "Spanish";
-  const isTagalog = language === "Tagalog";
 
   if (isSpanish) {
     return {
@@ -23,23 +22,33 @@ function getFallbackStory({ childName, ageGroup, theme, world, moralLesson, lang
     };
   }
 
+  const soundEffects = {
+    "Whispering Enchanted Forest": "🍃 Rustle-whoosh! Sparkle!",
+    "Cosmic Starlight Galaxy": "🚀 Zoom-ping! Twinkle!",
+    "Deep Coral Ocean Kingdom": "🐠 Splish-splash! Bubble-pop!",
+    "Fluffy Cloud City": "☁️ Whoooosh! Soft-puff!",
+    "Cozy Backyard Jungle": "🐾 Pitter-patter! Chirp!"
+  };
+
+  const soundEffect = soundEffects[world] || "✨ Ding! Sparkle!";
+
   return {
     title: `${childName}'s Adventure in the ${world}`,
-    soundEffect: "✨ Ding! Sparkle!",
+    soundEffect: soundEffect,
     paragraphs: [
       `Once upon a time, young ${childName} woke up to a gentle breeze carrying a whisper of excitement in the ${world}.`,
-      `Venturing forth, ${childName} encountered a gentle friend who needed help with ${theme.toLowerCase()}.`,
-      `Together, they navigated winding trails with an open heart and a brave spirit, turning every challenge into joy.`,
-      `By sunset, everyone cheered for ${childName}, celebrating kindness and friendship under the twinkling stars.`
+      `Venturing forth, ${childName} encountered a gentle friend who seemed lost along the path. Remembering the theme of ${theme.toLowerCase()}, ${childName} stepped forward with a warm smile and outstretched hands to help.`,
+      `Together, they navigated winding trails and overcame unexpected little hurdles. Each step proved that having an open heart and a brave spirit can turn any puzzle into a game of joy.`,
+      `By sunset, the whole kingdom cheered for ${childName}. As stars twinkled overhead, everyone celebrated not just the victory, but the kindness shared along the way.`
     ],
     moral: `Always remember: ${moralLesson.toLowerCase()}.`,
     funVocabulary: [
-      { word: "Courageous", meaning: "Brave and ready to face challenges with kindness." },
-      { word: "Enchanted", meaning: "Filled with magical wonder and delight." }
+      { word: "Courageous", meaning: "Brave and ready to face difficult things with a warm heart." },
+      { word: "Enchanted", meaning: "Filled with special wonder, joy, and delight." }
     ],
     discussionQuestions: [
       `What was your favorite moment of ${childName}'s adventure?`,
-      `How can you practice ${moralLesson.toLowerCase()} today?`
+      `How can you practice ${moralLesson.toLowerCase()} in your own life today?`
     ]
   };
 }
@@ -100,19 +109,21 @@ You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no trip
     });
 
     if (!response.ok) {
-      console.warn(`Gemini API error (${response.status}). Using fallback.`);
+      console.warn(`Gemini API error (${response.status}). Using fallback story.`);
       return getFallbackStory({ childName, ageGroup, theme, world, moralLesson, language });
     }
 
     const data = await response.json();
     const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    if (!rawText) return getFallbackStory({ childName, ageGroup, theme, world, moralLesson, language });
+    if (!rawText) {
+      return getFallbackStory({ childName, ageGroup, theme, world, moralLesson, language });
+    }
 
     const cleaned = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
     return JSON.parse(cleaned);
   } catch (err) {
-    console.warn("API request failed:", err.message, "— Using fallback.");
+    console.warn("API request failed:", err.message, "— Using fallback story.");
     return getFallbackStory({ childName, ageGroup, theme, world, moralLesson, language });
   }
 }
