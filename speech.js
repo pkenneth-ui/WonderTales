@@ -1,62 +1,105 @@
-export const SpeechService = {
-  synth: window.speechSynthesis,
-  isPlaying: false,
-  selectedVoice: null,
-  voices: [],
+let currentUtterance = null;
+let availableVoices = [];
+let selectedVoiceIndex = null;
 
-  initVoices(callback) {
-    if (!this.synth) return;
-    const load = () => {
-      this.voices = this.synth.getVoices().filter(v => v.lang.startsWith('en'));
-      if (this.voices.length > 0 && !this.selectedVoice) {
-        this.selectedVoice = this.voices.find(v => v.name.includes('Natural') || v.name.includes('Zira') || v.name.includes('Google')) || this.voices[0];
-      }
-      if (callback) callback(this.voices, this.selectedVoice);
-    };
-
-    load();
-    if (this.synth.onvoiceschanged !== undefined) {
-      this.synth.onvoiceschanged = load;
-    }
-  },
-
-  setVoice(voiceIndex) {
-    if (this.voices[voiceIndex]) {
-      this.selectedVoice = this.voices[voiceIndex];
-    }
-  },
-
-  speak(text, onStart, onEnd) {
-    if (!this.synth) return;
-    this.synth.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9;
-    utterance.pitch = 1.05;
-
-    if (this.selectedVoice) {
-      utterance.voice = this.selectedVoice;
-    }
-
-    utterance.onstart = () => { this.isPlaying = true; if (onStart) onStart(); };
-    utterance.onend = () => { this.isPlaying = false; if (onEnd) onEnd(); };
-    utterance.onerror = () => { this.isPlaying = false; if (onEnd) onEnd(); };
-
-    this.synth.speak(utterance);
-  },
-
-  pause() {
-    if (this.synth) this.synth.pause();
-  },
-
-  resume() {
-    if (this.synth) this.synth.resume();
-  },
-
-  stop() {
-    if (this.synth) {
-      this.synth.cancel();
-      this.isPlaying = false;
-    }
+export function initSpeech() {
+  if (!("speechSynthesis" in window)) return;
+  loadVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
   }
-};
+}
+
+function loadVoices() {
+  if (!("speechSynthesis" in window)) return [];
+  availableVoices = speechSynthesis.getVoices().filter(v => v.lang.startsWith("en"));
+  return availableVoices;
+}
+
+export function getVoices() {
+  if (availableVoices.length === 0) loadVoices();
+  return availableVoices;
+}
+
+export function setVoice(index) {
+  selectedVoiceIndex = index;
+}
+
+function pickFriendlyVoice() {
+  if (selectedVoiceIndex !== null && availableVoices[selectedVoiceIndex]) {
+    return availableVoices[selectedVoiceIndex];
+  }
+  const preferred = [
+    "Google US English",
+    "Samantha",
+    "Natural",
+    "Jenny",
+    "Zira",
+    "Victoria",
+    "Karen",
+    "Google UK English Female"
+  ];
+  for (const name of preferred) {
+    const match = availableVoices.find(v => v.name.includes(name));
+    if (match) return match;
+  }
+  const nonRobotic = availableVoices.find(v => 
+    !v.name.toLowerCase().includes("david") && 
+    !v.name.toLowerCase().includes("desktop")
+  );
+  return nonRobotic || availableVoices[0] || null;
+}
+
+export function speakStory(text, onStart, onEnd, onBoundary) {
+  if (!("speechSynthesis" in window)) {
+    alert("Text-to-speech is not supported in this browser.");
+    return;
+  }
+  stopSpeech();
+
+  currentUtterance = new SpeechSynthesisUtterance(text);
+  const voice = pickFriendlyVoice();
+  if (voice) currentUtterance.voice = voice;
+
+  currentUtterance.pitch = 1.08;
+  currentUtterance.rate = 0.88;
+
+  if (onStart) currentUtterance.onstart = onStart;
+  if (onEnd) currentUtterance.onend = onEnd;
+  currentUtterance.onerror = () => { if (onEnd) onEnd(); };
+
+  if (onBoundary) {
+    currentUtterance.onboundary = (e) => {
+      if (e.name === "word") onBoundary(e.charIndex);
+    };
+  }
+
+  speechSynthesis.speak(currentUtterance);
+}
+
+export function pauseSpeech() {
+  if ("speechSynthesis" in window && speechSynthesis.speaking) {
+    speechSynthesis.pause();
+  }
+}
+
+export function resumeSpeech() {
+  if ("speechSynthesis" in window && speechSynthesis.paused) {
+    speechSynthesis.resume();
+  }
+}
+
+export function stopSpeech() {
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+    currentUtterance = null;
+  }
+}
+
+export function isSpeaking() {
+  return "speechSynthesis" in window && speechSynthesis.speaking && !speechSynthesis.paused;
+}
+
+export function isPaused() {
+  return "speechSynthesis" in window && speechSynthesis.paused;
+}
