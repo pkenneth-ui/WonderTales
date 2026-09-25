@@ -1,6 +1,9 @@
+import { getSpeechSpeed } from "./storage.js";
+
 let currentUtterance = null;
 let availableVoices = [];
 let selectedVoiceIndex = null;
+let currentSpeechRate = getSpeechSpeed();
 
 export function initSpeech() {
   if (!("speechSynthesis" in window)) return;
@@ -23,6 +26,10 @@ export function getVoices() {
 
 export function setVoice(index) {
   selectedVoiceIndex = index;
+}
+
+export function setSpeechRate(rate) {
+  currentSpeechRate = parseFloat(rate) || 0.88;
 }
 
 function pickFriendlyVoice() {
@@ -62,7 +69,7 @@ export function speakStory(text, onStart, onEnd, onBoundary) {
   if (voice) currentUtterance.voice = voice;
 
   currentUtterance.pitch = 1.08;
-  currentUtterance.rate = 0.88;
+  currentUtterance.rate = currentSpeechRate;
 
   if (onStart) currentUtterance.onstart = onStart;
   if (onEnd) currentUtterance.onend = onEnd;
