@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentFontSize = 18;
   let speechRate = 0.85;
 
+  let gateNum1 = 0;
+  let gateNum2 = 0;
+
   const form = document.getElementById('story-form');
   const charInput = document.getElementById('character-input');
   const themeSelect = document.getElementById('theme-select');
@@ -30,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const playAudioBtn = document.getElementById('play-audio-btn');
   const pauseAudioBtn = document.getElementById('pause-audio-btn');
   const stopAudioBtn = document.getElementById('stop-audio-btn');
-  const audioStatusText = document.getElementById('audio-status-text');
+  const voiceSelect = document.getElementById('voice-select');
   const speedToggleBtn = document.getElementById('speed-toggle-btn');
 
   const fontIncreaseBtn = document.getElementById('font-increase-btn');
@@ -50,14 +53,40 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearApiKeyBtn = document.getElementById('clear-api-key-btn');
   const apiKeyStatusBadge = document.getElementById('api-key-status-badge');
 
+  const safetyBadgeBtn = document.getElementById('safety-badge-btn');
+  const safetyModal = document.getElementById('safety-modal');
+  const closeSafetyBtn = document.getElementById('close-safety-btn');
+  const confirmSafetyBtn = document.getElementById('confirm-safety-btn');
+
+  const parentGateModal = document.getElementById('parent-gate-modal');
+  const gateQuestion = document.getElementById('gate-question');
+  const gateAnswerInput = document.getElementById('gate-answer-input');
+  const verifyGateBtn = document.getElementById('verify-gate-btn');
+  const closeGateBtn = document.getElementById('close-gate-btn');
+
+  SpeechService.initVoices((voices) => {
+    if (!voiceSelect) return;
+    voiceSelect.innerHTML = '';
+    voices.forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `${v.name.split(' ')[0]} (${v.lang})`;
+      voiceSelect.appendChild(opt);
+    });
+  });
+
+  voiceSelect?.addEventListener('change', (e) => {
+    SpeechService.setVoice(parseInt(e.target.value));
+  });
+
   function updateApiKeyBadge() {
     if (!apiKeyStatusBadge) return;
     const key = StorageService.getApiKey();
     if (key) {
-      apiKeyStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300';
+      apiKeyStatusBadge.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-400/20 text-emerald-200 border border-emerald-400/40';
       apiKeyStatusBadge.textContent = '✨ Gemini AI Active';
     } else {
-      apiKeyStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300';
+      apiKeyStatusBadge.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40';
       apiKeyStatusBadge.textContent = '⚡ Demo Mode';
     }
   }
@@ -105,11 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.age-pill').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.age-pill').forEach(b => {
-        b.classList.remove('bg-indigo-600', 'text-white');
-        b.classList.add('border', 'text-gray-700');
+        b.classList.remove('btn-pill-active');
+        b.classList.add('border', 'border-white/20', 'text-white');
       });
-      btn.classList.add('bg-indigo-600', 'text-white');
-      btn.classList.remove('border', 'text-gray-700');
+      btn.classList.add('btn-pill-active');
+      btn.classList.remove('border', 'border-white/20', 'text-white');
       selectedAge = btn.dataset.age;
     });
   });
@@ -163,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateLibraryUI();
 
       if (typeof confetti === 'function') {
-        confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+        confetti({ particleCount: 75, spread: 65, origin: { y: 0.6 } });
       }
 
     } catch (err) {
@@ -240,17 +269,14 @@ document.addEventListener('DOMContentLoaded', () => {
   playAudioBtn?.addEventListener('click', () => {
     if (!currentStory) return;
     const text = `${currentStory.title}. ${currentStory.paragraphs.join(' ')}. The moral is: ${currentStory.moral}`;
-    SpeechService.rate = speechRate;
     SpeechService.speak(text, 
       () => { 
         playAudioBtn.classList.add('hidden'); 
         pauseAudioBtn?.classList.remove('hidden'); 
-        if (audioStatusText) audioStatusText.textContent = 'Reading aloud...';
       },
       () => { 
         playAudioBtn.classList.remove('hidden'); 
         pauseAudioBtn?.classList.add('hidden'); 
-        if (audioStatusText) audioStatusText.textContent = 'Listen';
       }
     );
   });
@@ -259,14 +285,12 @@ document.addEventListener('DOMContentLoaded', () => {
     SpeechService.pause();
     playAudioBtn?.classList.remove('hidden');
     pauseAudioBtn.classList.add('hidden');
-    if (audioStatusText) audioStatusText.textContent = 'Paused';
   });
 
   stopAudioBtn?.addEventListener('click', () => {
     SpeechService.stop();
     playAudioBtn?.classList.remove('hidden');
     pauseAudioBtn?.classList.add('hidden');
-    if (audioStatusText) audioStatusText.textContent = 'Listen';
   });
 
   document.getElementById('copy-story-btn')?.addEventListener('click', () => {
@@ -297,13 +321,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   openSettingsBtn?.addEventListener('click', () => {
-    if (apiKeyInput) apiKeyInput.value = StorageService.getApiKey();
-    settingsModal?.classList.remove('hidden');
+    gateNum1 = Math.floor(Math.random() * 8) + 2;
+    gateNum2 = Math.floor(Math.random() * 8) + 2;
+    if (gateQuestion) gateQuestion.textContent = `What is ${gateNum1} + ${gateNum2}?`;
+    if (gateAnswerInput) gateAnswerInput.value = '';
+    parentGateModal?.classList.remove('hidden');
   });
 
-  apiKeyStatusBadge?.addEventListener('click', () => {
-    if (apiKeyInput) apiKeyInput.value = StorageService.getApiKey();
-    settingsModal?.classList.remove('hidden');
+  closeGateBtn?.addEventListener('click', () => {
+    parentGateModal?.classList.add('hidden');
+  });
+
+  verifyGateBtn?.addEventListener('click', () => {
+    const ans = parseInt(gateAnswerInput.value);
+    if (ans === (gateNum1 + gateNum2)) {
+      parentGateModal?.classList.add('hidden');
+      if (apiKeyInput) apiKeyInput.value = StorageService.getApiKey();
+      settingsModal?.classList.remove('hidden');
+    } else {
+      alert('Incorrect answer. Settings are protected for parents & teachers.');
+    }
   });
 
   closeSettingsBtn?.addEventListener('click', () => settingsModal?.classList.add('hidden'));
@@ -321,6 +358,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateApiKeyBadge();
     alert('API Key cleared. Switched to Demo Mode.');
   });
+
+  safetyBadgeBtn?.addEventListener('click', () => safetyModal?.classList.remove('hidden'));
+  closeSafetyBtn?.addEventListener('click', () => safetyModal?.classList.add('hidden'));
+  confirmSafetyBtn?.addEventListener('click', () => safetyModal?.classList.add('hidden'));
 
   updateApiKeyBadge();
   updateLibraryUI();
