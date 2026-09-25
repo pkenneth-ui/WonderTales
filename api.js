@@ -1,91 +1,97 @@
-export const GeminiService = {
-  async generateStory(params, apiKey) {
-    if (!apiKey || !apiKey.trim()) {
-      return this.getDemoStory(params);
-    }
+import { DEFAULT_API_KEY } from "./config.js";
+import { getStoredApiKey } from "./storage.js";
 
-    const { character, theme, ageGroup, moral, extra } = params;
+const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent";
 
-    const prompt = `You are a warm children's author and educator. Write an age-appropriate story for children (${ageGroup}).
-No violence, no scary content, no mature themes.
+export async function generateStory({ childName, ageGroup, theme, world, moralLesson }) {
+  const apiKey = getStoredApiKey() || DEFAULT_API_KEY;
 
-Story requirements:
-- Hero: ${character}
-- Setting: ${theme}
-- Age: ${ageGroup}
-- Moral Lesson: ${moral}
-${extra ? `- Extra detail: ${extra}` : ''}
+  if (!apiKey || apiKey.trim() === "") {
+    throw new Error("No Gemini API key found. Please open Settings (⚙️) to enter your API key.");
+  }
 
-Respond ONLY with a valid JSON object matching this exact schema:
+  const systemInstruction = `You are WonderTales, an award-winning children's author and kindergarten teacher.
+You write engaging, heartwarming, imaginative, and strictly age-appropriate stories for children.
+SAFETY RULES:
+- Never include violence, danger, scary monsters, mature content, cruelty, or horror.
+- Tone must always be warm, uplifting, educational, and fun.
+- Vocabulary and sentence length MUST be tailored to the child's age group:
+  * 3-5: Simple words, repetitive playful sounds, short sentences, big sensory descriptions.
+  * 6-8: Exciting chapter-like story, fun dialogues, relatable dilemmas, gentle humor.
+  * 9-12: Rich storytelling, descriptive vocabulary, character growth, critical thinking questions.
+
+You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no triple backticks) matching this exact schema:
 {
-  "title": "Story Title",
-  "paragraphs": ["First paragraph...", "Second paragraph...", "Third paragraph..."],
-  "moral": "The 1-sentence lesson learned",
-  "funVocabulary": [{"word": "Word", "definition": "Simple definition"}],
+  "title": "A fun, magical title",
+  "soundEffect": "A playful onomatopoeia sound to start (e.g., 'Whoosh! Sparkle sparkle!')",
+  "paragraphs": [
+    "First paragraph introducing the adventure...",
+    "Second paragraph building the gentle excitement...",
+    "Third paragraph solving the challenge with the moral lesson...",
+    "Fourth concluding happy ending paragraph..."
+  ],
+  "moral": "One clear, positive moral takeaway sentence.",
+  "funVocabulary": [
+    {"word": "Magnificent", "meaning": "Extremely beautiful or wonderful."},
+    {"word": "Curious", "meaning": "Eager to learn and explore new things."}
+  ],
   "discussionQuestions": [
-    "Discussion question 1 for the teacher to ask the class",
-    "Discussion question 2 about kindness or problem-solving"
+    "What would you have done if you were in the story?",
+    "Why was it important to share with friends?"
   ]
 }`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey.trim()}`;
+  const userPrompt = `Write a magical story for:
+- Child's Name: ${childName}
+- Age Group: ${ageGroup}
+- Theme: ${theme}
+- World / Setting: ${world}
+- Moral Lesson: ${moralLesson}`;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json"
-        }
-      })
-    });
+  const response = await fetch(`${GEMINI_URL}?key=${apiKey.trim()}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: userPrompt }] }],
+      systemInstruction: { parts: [{ text: systemInstruction }] },
+      generationConfig: {
+        temperature: 0.8,
+        topP: 0.95,
+        responseMimeType: "application/json"
+      }
+    })
+  });
 
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || `API error ${response.status}`);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const message = errorData?.error?.message || `API error (${response.status})`;
+    if (response.status === 403 || message.includes("API key")) {
+      throw new Error("Invalid or restricted Gemini API key. Please verify your key in Settings (⚙️).");
     }
-
-    const data = await response.json();
-    let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!rawText) {
-      throw new Error('Gemini returned an empty response. Please try again.');
+    if (response.status === 429) {
+      throw new Error("AI is catching its breath (Rate limit reached). Please wait 30 seconds and try again!");
     }
+    throw new Error(message);
+  }
 
-    rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
-    const parsed = JSON.parse(rawText);
+  const data = await response.json();
+  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
+  if (!rawText) {
+    throw new Error("The AI returned an empty response. Please try again!");
+  }
+
+  try {
+    const cleaned = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
+    return JSON.parse(cleaned);
+  } catch (err) {
     return {
-      title: parsed.title || 'A Magical Adventure',
-      paragraphs: parsed.paragraphs || [rawText],
-      moral: parsed.moral || 'Kindness is magical.',
-      funVocabulary: parsed.funVocabulary || [],
-      discussionQuestions: parsed.discussionQuestions || [
-        "What was your favorite part of the story?",
-        "How did the characters work together?"
-      ],
-      theme,
-      ageGroup
-    };
-  },
-
-  getDemoStory(params) {
-    const char = params.character || 'Barnaby Bunny';
-    return {
-      title: `${char} and the Glowing Starflower`,
-      paragraphs: [
-        `Deep in the Enchanted Woods, morning sunlight danced across the trees as ${char} hopped happily along the path.`,
-        `Beside the brook, ${char} found a tiny starflower glowing with soft blue light. He held it high to help an elderly hedgehog find his way home.`,
-        `As soon as ${char} shared the light, the starflower blossomed twice as bright. He smiled, learning that kindness makes every adventure magical.`
-      ],
-      moral: `When you help a friend, the whole world shines brighter (${params.moral || 'Kindness'}).`,
-      funVocabulary: [{ word: "Glowing", definition: "Shining with a gentle light." }],
-      discussionQuestions: [
-        `Why did ${char} decide to share his starflower?`,
-        `How does it feel when someone helps you find your way?`
-      ],
-      theme: params.theme || 'Enchanted Woods',
-      ageGroup: params.ageGroup || '6-8 yrs'
+      title: `${childName}'s Adventure in ${world}`,
+      soundEffect: "✨ Ding! Sparkle!",
+      paragraphs: rawText.split("\n\n").filter(p => p.trim().length > 0),
+      moral: `Always remember to practice ${moralLesson.toLowerCase()}.`,
+      funVocabulary: [],
+      discussionQuestions: ["What was your favorite part of this adventure?"]
     };
   }
-};
+}
