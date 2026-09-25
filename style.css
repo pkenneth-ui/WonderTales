@@ -191,8 +191,9 @@ body.dark .age-btn.active {
   max-height: 280px;
   overflow-y: auto;
   border-radius: 1.25rem;
-  box-shadow: 0 14px 30px -4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 14px 30px -4px rgba(0, 0, 0, 0.25);
   background-color: #ffffff;
+  border: 2px solid #e2e8f0;
 }
 .custom-dropdown-menu.open {
   display: block;
@@ -200,12 +201,25 @@ body.dark .age-btn.active {
 .custom-dropdown-menu .dropdown-item {
   color: #1e293b !important;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
+.custom-dropdown-menu .dropdown-item:hover {
+  background-color: #f3e8ff !important; /* soft purple */
+  color: #6b21a8 !important;
+}
+
+/* Dark mode dropdowns & hovers */
 body.dark .custom-dropdown-menu {
-  background-color: #1e293b;
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 0 14px 30px -4px rgba(0, 0, 0, 0.6);
 }
 body.dark .custom-dropdown-menu .dropdown-item {
-  color: #f1f5f9 !important;
+  color: #f8fafc !important;
+}
+body.dark .custom-dropdown-menu .dropdown-item:hover {
+  background-color: #3730a3 !important; /* bold indigo/purple in dark mode */
+  color: #ffffff !important;
 }
 
 /* Navbar */
@@ -216,11 +230,20 @@ body.dark .nav-bar {
   background-color: rgba(15, 23, 42, 0.92) !important;
 }
 
+/* Remove number spinners from parental gate */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* ====================================================
    MOBILE UNIFORMITY & CENTER ALIGNMENT (< 640px)
    ==================================================== */
 @media (max-width: 639px) {
-  /* Center top headers inside the cards */
   #storyStudioCard > div.flex.items-center.justify-between,
   #storybookCard > div.border-b-2 {
     flex-direction: column;
@@ -237,24 +260,20 @@ body.dark .nav-bar {
     gap: 6px;
   }
 
-  /* Make sure Surprise Me fits well */
   #surpriseMeBtn {
     width: 100%;
     justify-content: center;
   }
 
-  /* Center labels and form fields */
   .card-label {
     text-align: center;
   }
 
-  /* Audio bar centered when shown */
   #audioControlsBar {
     width: 100%;
     justify-content: center;
   }
 
-  /* Bottom actions bar (Save, Print, Copy) stacked & centered */
   #actionButtonsBar {
     flex-direction: column;
     align-items: center;
@@ -277,7 +296,6 @@ body.dark .nav-bar {
     justify-content: center;
   }
 
-  /* Modals padding & width */
   #historyModal > div,
   #parentalModal > div,
   #settingsModal > div,
