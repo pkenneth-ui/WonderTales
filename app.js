@@ -335,10 +335,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const privacyModal = document.getElementById("privacyModal");
 
   document.getElementById("settingsBtn")?.addEventListener("click", () => {
-    const num1 = Math.floor(Math.random() * 8) + 2;
-    const num2 = Math.floor(Math.random() * 8) + 2;
-    parentalSolution = num1 + num2;
-    document.getElementById("parentalMathQuestion").textContent = `${num1} + ${num2} = ?`;
+    const operations = ["+", "-", "×"];
+    const op = operations[Math.floor(Math.random() * operations.length)];
+    let num1, num2;
+
+    if (op === "+") {
+      num1 = Math.floor(Math.random() * 40) + 15;
+      num2 = Math.floor(Math.random() * 30) + 12;
+      parentalSolution = num1 + num2;
+    } else if (op === "-") {
+      num1 = Math.floor(Math.random() * 50) + 30;
+      num2 = Math.floor(Math.random() * 25) + 10;
+      parentalSolution = num1 - num2;
+    } else {
+      num1 = Math.floor(Math.random() * 7) + 6;
+      num2 = Math.floor(Math.random() * 8) + 6;
+      parentalSolution = num1 * num2;
+    }
+
+    document.getElementById("parentalMathQuestion").textContent = `${num1} ${op} ${num2} = ?`;
     document.getElementById("parentalMathAnswer").value = "";
     parentalModal?.classList.remove("hidden");
   });
