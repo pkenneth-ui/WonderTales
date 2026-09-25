@@ -1,1 +1,1 @@
-export const DEFAULT_API_KEY = "AQ.Ab8RN6JlwNtFkpyKpAAKLsrbFdXAq4NXlvNZfmT8o15P1ialww";
+export const DEFAULT_API_KEY = "AQ.Ab8RN6KRLwttAHQA3HN1X9IlFqSU6kkLEZGsP6Pf8FuAZlfpLA";
