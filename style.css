@@ -14,6 +14,16 @@ body {
     radial-gradient(circle at 50% 10%, rgba(59, 130, 246, 0.3) 0%, transparent 35%);
   min-height: 100vh;
   color: #1f2937;
+  transition: background-color 0.3s ease;
+}
+
+/* Bedtime Dark Mode Background */
+html.dark body {
+  background-color: #0b0f24;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 30%),
+    radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 25%),
+    radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.5) 0%, transparent 40%);
 }
 
 .font-display {
@@ -22,12 +32,23 @@ body {
 
 .bg-kids-blue {
   background-color: #2b59c3;
+  transition: background-color 0.3s ease;
+}
+
+html.dark .bg-kids-blue {
+  background-color: #182b6b;
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .btn-pill-active {
   background-color: #ffffff;
   color: #2b59c3;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+html.dark .btn-pill-active {
+  background-color: #f59e0b;
+  color: #171d4a;
 }
 
 .btn-3d-amber {
@@ -44,10 +65,30 @@ body {
   box-shadow: 0 1px 0 #b45309;
 }
 
-.storybook-card {
-  background-color: #ffffff;
-  border-radius: 2.5rem;
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.25);
+/* Custom Dropdown Animation */
+.dropdown-menu-animate {
+  animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Floating Animation */
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float-gentle {
+  animation: floatGentle 3s ease-in-out infinite;
 }
 
 @media print {
