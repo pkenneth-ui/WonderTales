@@ -1,6 +1,6 @@
+import { DEFAULT_API_KEY } from "./config.js";
 import { getStoredApiKey } from "./storage.js";
 
-const DEFAULT_API_KEY = "AQ.Ab8RN6JmMZxi94j032ij9sezewACQGsYQOa8ibPyiFi1-lmbLA";
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent";
 
 export async function generateStory({ childName, ageGroup, theme, world, moralLesson }) {
