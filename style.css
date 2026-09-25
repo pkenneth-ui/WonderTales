@@ -1,99 +1,136 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700;800&display=swap');
 
 :root {
-  --font-display: 'Fredoka', cursive, sans-serif;
-  --font-body: 'Quicksand', sans-serif;
+  /* Vibrant, playful candy background inspired by KidZo */
+  --bg-gradient-light: linear-gradient(135deg, #fff7ed 0%, #fdf4ff 35%, #eff6ff 70%, #f0fdf4 100%);
+  --bg-gradient-dark: linear-gradient(135deg, #0b1120 0%, #171d34 50%, #1e1b4b 100%);
 }
 
 body {
-  font-family: var(--font-body);
-  background-color: #171d4a;
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(167, 139, 250, 0.25) 0%, transparent 25%),
-    radial-gradient(circle at 90% 80%, rgba(251, 191, 36, 0.2) 0%, transparent 30%),
-    radial-gradient(circle at 50% 10%, rgba(59, 130, 246, 0.3) 0%, transparent 35%);
+  font-family: 'Quicksand', sans-serif;
+  background: var(--bg-gradient-light);
   min-height: 100vh;
-  color: #1f2937;
-  transition: background-color 0.3s ease;
+  font-size: 16px;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Bedtime Dark Mode Background */
-html.dark body {
-  background-color: #0b0f24;
+body.dark {
+  background: var(--bg-gradient-dark);
+  color: #f8fafc;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: 'Fredoka', cursive, sans-serif;
+}
+
+/* Playful floating background bubbles */
+.bg-bubble-pattern {
   background-image: 
-    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 30%),
-    radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.1) 0%, transparent 25%),
-    radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.5) 0%, transparent 40%);
+    radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 20%),
+    radial-gradient(circle at 90% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 25%),
+    radial-gradient(circle at 50% 85%, rgba(14, 165, 233, 0.08) 0%, transparent 25%);
 }
 
-.font-display {
-  font-family: var(--font-display);
-}
-
-.bg-kids-blue {
-  background-color: #2b59c3;
-  transition: background-color 0.3s ease;
-}
-
-html.dark .bg-kids-blue {
-  background-color: #182b6b;
-  border-color: rgba(99, 102, 241, 0.3);
-}
-
-.btn-pill-active {
-  background-color: #ffffff;
-  color: #2b59c3;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-html.dark .btn-pill-active {
-  background-color: #f59e0b;
-  color: #171d4a;
-}
-
+/* 3D Tactile Amber Button (Create My Story) */
 .btn-3d-amber {
-  background: #f59e0b;
-  box-shadow: 0 4px 0 #b45309;
-  transition: all 0.1s ease;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  color: #ffffff;
+  border-bottom: 6px solid #b45309;
+  box-shadow: 0 8px 16px -2px rgba(180, 83, 9, 0.35);
+  transition: all 0.15s ease;
 }
 .btn-3d-amber:hover {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #b45309;
+  border-bottom: 7px solid #92400e;
 }
 .btn-3d-amber:active {
+  transform: translateY(4px);
+  border-bottom: 2px solid #92400e;
+  box-shadow: 0 2px 4px rgba(180, 83, 9, 0.2);
+}
+
+/* 3D Tactile Indigo/Purple Button (Read Aloud) */
+.btn-3d-purple {
+  background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
+  color: #ffffff;
+  border-bottom: 5px solid #5b21b6;
+  box-shadow: 0 6px 14px -2px rgba(109, 40, 217, 0.35);
+  transition: all 0.15s ease;
+}
+.btn-3d-purple:hover {
+  background: linear-gradient(180deg, #7c3aed 0%, #6d28d9 100%);
+  transform: translateY(-2px);
+  border-bottom: 6px solid #4c1d95;
+}
+.btn-3d-purple:active {
   transform: translateY(3px);
-  box-shadow: 0 1px 0 #b45309;
+  border-bottom: 2px solid #4c1d95;
 }
 
-/* Custom Dropdown Animation */
-.dropdown-menu-animate {
-  animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+/* Age Group Selector Buttons (Consistent Bold Amber) */
+.age-btn {
+  background-color: #ffffff;
+  color: #475569;
+  border: 2.5px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+.age-btn:hover {
+  background-color: #fef3c7;
+  border-color: #f59e0b;
+}
+.age-btn.active {
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
+  border-color: #b45309 !important;
+  box-shadow: 0 6px 14px rgba(245, 158, 11, 0.45) !important;
+  transform: scale(1.03);
 }
 
-@keyframes dropdownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+/* Dark mode card overrides */
+body.dark .bg-card-theme {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
 }
 
-/* Floating Animation */
-@keyframes floatGentle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+body.dark .input-theme {
+  background-color: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
 }
 
-.animate-float-gentle {
-  animation: floatGentle 3s ease-in-out infinite;
+body.dark .age-btn {
+  background-color: #1e293b;
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+body.dark .age-btn.active {
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
+  border-color: #fbbf24 !important;
+}
+
+/* Custom Dropdown Menus */
+.custom-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 105%;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 1.25rem;
+  box-shadow: 0 14px 30px -4px rgba(0, 0, 0, 0.2);
+}
+.custom-dropdown-menu.open {
+  display: block;
 }
 
 @media print {
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-  }
+  body { background: #ffffff !important; color: #000000 !important; }
+  nav, #storyStudioCard, #audioControlsBar, #actionButtonsBar, .no-print { display: none !important; }
+  #storybookCard { border: none !important; box-shadow: none !important; width: 100% !important; }
 }
