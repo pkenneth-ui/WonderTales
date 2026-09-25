@@ -32,7 +32,6 @@ import {
 document.addEventListener("DOMContentLoaded", () => {
   initSpeech();
 
-// State
   let selectedAge = "3-5";
   let selectedTheme = "Adventure & Bravery";
   let selectedWorld = "Whispering Enchanted Forest";
@@ -40,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentStoryData = null;
   let parentalSolution = null;
 
-// Surprise Me data pools
   const allThemes = [
     { val: "Adventure & Bravery", label: "🌟 Adventure & Bravery" },
     { val: "Friendship & Kindness", label: "🤝 Friendship & Kindness" },
@@ -66,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-// DOM elements
   const storyForm = document.getElementById("storyForm");
   const generateBtn = document.getElementById("generateBtn");
   const storyContentArea = document.getElementById("storyContentArea");
@@ -79,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   const themeIcon = document.getElementById("themeIcon");
 
-// Apply Font Size to Story Area
   function applyStoryFontSize(size) {
     if (!storyContentArea) return;
     storyContentArea.classList.remove("text-base", "text-lg", "text-xl", "text-2xl");
@@ -90,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   applyStoryFontSize(getFontSizePreference());
 
-// Font size buttons inside Settings
   document.querySelectorAll(".font-size-btn").forEach(btn => {
     if (btn.dataset.size === getFontSizePreference()) {
       btn.classList.add("bg-amber-500", "border-amber-500", "text-white");
@@ -108,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-// Narration Speed Slider
   const speedSlider = document.getElementById("speechSpeedSlider");
   const speedLabel = document.getElementById("speedValueLabel");
   if (speedSlider && speedLabel) {
@@ -119,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-// Age group selector
   document.querySelectorAll(".age-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".age-btn").forEach(b => b.classList.remove("active"));
@@ -128,7 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-// Dropdown helper
   function setupDropdown(btnId, menuId, labelId, onSelect) {
     const btn = document.getElementById(btnId);
     const menu = document.getElementById(menuId);
@@ -157,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".custom-dropdown-menu").forEach(m => m.classList.remove("open"));
   });
 
-// Surprise Me! Button
   document.getElementById("surpriseMeBtn")?.addEventListener("click", () => {
     const rTheme = pick(allThemes);
     const rWorld = pick(allWorlds);
@@ -183,7 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-// Bedtime Theme Switcher
   function applyTheme(theme) {
     if (theme === "dark") {
       document.body.classList.add("dark");
@@ -203,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTheme(newTheme);
   });
 
-// Voice population
   setTimeout(() => {
     const voices = getVoices();
     if (voiceSelect && voices.length > 0) {
@@ -220,7 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 600);
 
-// Form Submission
   storyForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const childName = document.getElementById("childName")?.value.trim();
@@ -259,7 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-// Render Story
   function renderStory(story) {
     const paragraphsHtml = story.paragraphs.map(p => `
       <p class="text-lg sm:text-xl leading-relaxed text-slate-800 dark:text-slate-100 mb-5 font-medium">${p}</p>
@@ -290,7 +277,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-// Audio Controls
   readAloudBtn?.addEventListener("click", () => {
     if (!currentStoryData) return;
     if (isSpeaking()) { pauseSpeech(); readAloudLabel.textContent = "Resume"; return; }
@@ -301,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   stopAudioBtn?.addEventListener("click", () => { stopSpeech(); readAloudLabel.textContent = "Read Aloud"; });
 
-// Save / Print / Copy
   document.getElementById("saveStoryBtn")?.addEventListener("click", () => {
     if (currentStoryData) { saveStoryToFavorites(currentStoryData); alert("Story saved to your device's favorites! 🌟"); }
   });
@@ -313,7 +298,6 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Story copied to clipboard! 📋");
   });
 
-// History Modal
   const historyModal = document.getElementById("historyModal");
   const historyList = document.getElementById("historyList");
 
@@ -346,7 +330,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("closeHistoryBtn")?.addEventListener("click", () => historyModal?.classList.add("hidden"));
 
-// Parental Gate & Settings
   const parentalModal = document.getElementById("parentalModal");
   const settingsModal = document.getElementById("settingsModal");
   const privacyModal = document.getElementById("privacyModal");
@@ -388,7 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("closeSettingsBtn")?.addEventListener("click", () => settingsModal?.classList.add("hidden"));
   
-// Save All Settings
   document.getElementById("saveCustomKeyBtn")?.addEventListener("click", () => {
     const key = document.getElementById("customApiKeyInput")?.value.trim();
     const speed = parseFloat(document.getElementById("speechSpeedSlider")?.value) || 0.88;
@@ -405,7 +387,6 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("All preferences saved securely! 🌟");
   });
 
-// Clear Favorites handler
   document.getElementById("clearFavoritesBtn")?.addEventListener("click", () => {
     if (confirm("Are you sure you want to clear all saved favorite stories?")) {
       clearFavoriteStories();
