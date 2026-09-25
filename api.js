@@ -1,6 +1,7 @@
-import { DEFAULT_API_KEY } from "./config.js";
 import { getStoredApiKey } from "./storage.js";
 
+// Pre-configured default key so the app works automatically
+const DEFAULT_API_KEY = "AQ.Ab8RN6JmMZxi94j032ij9sezewACQGsYQOa8ibPyiFi1-lmbLA";
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent";
 
 export async function generateStory({ childName, ageGroup, theme, world, moralLesson }) {
@@ -66,7 +67,7 @@ You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no trip
     const errorData = await response.json().catch(() => ({}));
     const message = errorData?.error?.message || `API error (${response.status})`;
     if (response.status === 403 || message.includes("API key")) {
-      throw new Error("Invalid or restricted Gemini API key. Please verify your key in Settings (⚙️).");
+      throw new Error("Invalid or restricted Gemini API key. Please check your key in Settings (⚙️).");
     }
     if (response.status === 429) {
       throw new Error("AI is catching its breath (Rate limit reached). Please wait 30 seconds and try again!");
