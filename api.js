@@ -3,7 +3,6 @@ import { getStoredApiKey } from "./storage.js";
 
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
-// Fallback story generator tailored to inputs
 function getFallbackStory({ childName, ageGroup, theme, world, moralLesson }) {
   const soundEffects = {
     "Whispering Enchanted Forest": "🍃 Rustle-whoosh! Sparkle!",
@@ -21,7 +20,7 @@ function getFallbackStory({ childName, ageGroup, theme, world, moralLesson }) {
     paragraphs: [
       `Once upon a time, young ${childName} woke up to a gentle breeze carrying a whisper of excitement. Today was no ordinary day in the ${world}—it was the day of the Great Celebration!`,
       `Venturing forth, ${childName} encountered a gentle friend who seemed lost along the path. Remembering the theme of ${theme.toLowerCase()}, ${childName} stepped forward with a warm smile and outstretched hands to help.`,
-      `Together, they navigated winding trails and overcome unexpected little hurdles. Each step proved that having an open heart and a brave spirit can turn any puzzle into a game of joy.`,
+      `Together, they navigated winding trails and overcame unexpected little hurdles. Each step proved that having an open heart and a brave spirit can turn any puzzle into a game of joy.`,
       `By sunset, the whole kingdom cheered for ${childName}. As stars twinkled overhead, everyone celebrated not just the victory, but the kindness shared along the way.`
     ],
     moral: `Always remember: ${moralLesson.toLowerCase()}.`,
@@ -39,7 +38,6 @@ function getFallbackStory({ childName, ageGroup, theme, world, moralLesson }) {
 export async function generateStory({ childName, ageGroup, theme, world, moralLesson }) {
   const apiKey = getStoredApiKey() || DEFAULT_API_KEY;
 
-  // If no key is configured, immediately provide the tailored fallback
   if (!apiKey || apiKey.trim() === "") {
     console.warn("No API key detected. Providing fallback story.");
     return getFallbackStory({ childName, ageGroup, theme, world, moralLesson });
