@@ -2,332 +2,275 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WonderTales — Kids Club Story AI</title>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WonderTales — AI Story Generator for Kids</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            kidsblue: '#2b59c3',
-          }
-        }
-      }
-    }
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen flex flex-col p-2 sm:p-6 lg:p-8 transition-colors duration-300">
+<body class="bg-bubble-pattern text-slate-800 antialiased selection:bg-amber-200">
 
-  <div class="hidden print:block mb-6 p-4 border-b-2 border-gray-800 text-sm">
-    <div class="flex justify-between items-center mb-2">
-      <h1 class="text-xl font-bold font-display">WonderTales Classroom Worksheet</h1>
-      <span>Date: ____________________</span>
-    </div>
-    <div class="flex justify-between items-center">
-      <span>Student Name: ____________________________________</span>
-      <span>Grade: _________</span>
-    </div>
-  </div>
-
-  <div class="max-w-7xl mx-auto w-full bg-kids-blue rounded-3xl sm:rounded-[2.5rem] shadow-2xl border-2 sm:border-4 border-blue-400/30 overflow-hidden flex flex-col print:hidden transition-colors duration-300">
-    
-    <header class="p-3.5 sm:p-6 lg:px-10 flex items-center justify-between border-b border-blue-400/20 text-white gap-2">
-      <div class="flex items-center space-x-2.5 min-w-0">
-        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-400 flex items-center justify-center text-2xl sm:text-3xl shadow-md shrink-0">
-          😉
-        </div>
-        <div class="min-w-0">
-          <h1 class="text-lg sm:text-2xl font-display font-bold tracking-wide truncate leading-tight">kids club</h1>
-          <p class="text-[10px] sm:text-xs text-blue-200 truncate">WonderTales AI</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <button id="safety-badge-btn" class="hidden md:flex px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 items-center gap-1">
-          <span>🛡️</span> <span>100% Safe</span>
-        </button>
-        
-        <button id="api-key-status-badge" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40 whitespace-nowrap">
-          ⚡ Demo
-        </button>
-        
-        <button id="open-library-btn" class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] sm:text-xs font-bold border border-white/20 transition flex items-center gap-1 whitespace-nowrap">
-          <span>📚</span> <span class="hidden sm:inline">Library</span> (<span id="library-count-badge">0</span>)
-        </button>
-
-        <button id="theme-toggle-btn" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition flex items-center justify-center text-sm sm:text-base shrink-0" title="Toggle Day / Bedtime Mode">
-          <span id="theme-toggle-icon">☀️</span>
-        </button>
-
-        <button id="open-settings-btn" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition flex items-center justify-center text-sm sm:text-base shrink-0" title="Parental Settings">
-          ⚙️
-        </button>
-      </div>
-    </header>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
+  <!-- TOP NAVBAR -->
+  <nav class="bg-white/85 dark:bg-slate-900/85 backdrop-blur-md sticky top-0 z-40 border-b border-purple-100 dark:border-slate-800 shadow-sm transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       
-      <div class="lg:col-span-5 p-4 sm:p-8 lg:p-10 text-white flex flex-col justify-between">
+      <!-- Brand Logo with KidZo Style 3D Badge -->
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-rose-400 to-indigo-500 flex items-center justify-center text-white shadow-lg text-xl transform -rotate-3 hover:rotate-0 transition-transform">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
         <div>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl sm:text-2xl font-display font-bold">Create a Story</h2>
-            <button id="surprise-btn" type="button" class="px-3.5 py-1.5 rounded-full bg-amber-400 hover:bg-amber-300 text-amber-950 text-xs font-bold shadow-md transition transform hover:scale-105 shrink-0">
-              🎲 Surprise Me!
-            </button>
-          </div>
-
-          <form id="story-form" class="space-y-3.5 sm:space-y-4">
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">Character / Hero</label>
-              <input id="character-input" type="text" required placeholder="e.g. Barnaby the brave rabbit" class="w-full px-4 py-2.5 sm:py-3 rounded-2xl bg-white/10 border border-blue-300/30 text-white placeholder-blue-300 focus:bg-white focus:text-gray-900 focus:outline-hidden transition text-sm">
-            </div>
-
-            <div class="relative">
-              <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">Theme & World</label>
-              <input type="hidden" id="theme-value" value="Enchanted Whispering Woods">
-              <button type="button" id="theme-dropdown-btn" class="w-full px-4 py-2.5 sm:py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-blue-300/30 text-white flex items-center justify-between text-sm transition">
-                <span id="theme-display" class="flex items-center gap-2 truncate">🌲 Enchanted Whispering Woods</span>
-                <span class="text-xs opacity-75 shrink-0 ml-1">▼</span>
-              </button>
-
-              <div id="theme-menu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-30 dropdown-menu-animate text-gray-800 text-sm space-y-1">
-                <div class="theme-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="Enchanted Whispering Woods">
-                  <span>🌲</span> <span>Enchanted Whispering Woods</span>
-                </div>
-                <div class="theme-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="The Sparkling Milky Way">
-                  <span>🚀</span> <span>Outer Space & Milky Way</span>
-                </div>
-                <div class="theme-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="The Great Coral Reef Kingdom">
-                  <span>🐠</span> <span>Deep Sea Coral Reef</span>
-                </div>
-                <div class="theme-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="A Cozy Grandmother's Bakery">
-                  <span>🧁</span> <span>Candyland & Sweet Bakery</span>
-                </div>
-                <div class="theme-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="The Friendly Dinosaur Valley">
-                  <span>🦕</span> <span>Friendly Dinosaur Valley</span>
-                </div>
-                <div class="theme-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="custom">
-                  <span>✏️</span> <span>Type Custom World...</span>
-                </div>
-              </div>
-              <input id="custom-theme-input" type="text" placeholder="Type custom magical world..." class="hidden mt-2 w-full px-4 py-2.5 rounded-xl bg-white text-gray-900 text-sm">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1.5">Age Group</label>
-              <div class="grid grid-cols-3 gap-2">
-                <button type="button" data-age="3-5 years (Toddlers)" class="age-pill px-2.5 py-2 rounded-xl text-xs font-bold border border-white/20 text-white hover:bg-white/10 transition">👶 3–5 yrs</button>
-                <button type="button" data-age="6-8 years (Early Readers)" class="age-pill btn-pill-active px-2.5 py-2 rounded-xl text-xs font-bold transition">🎒 6–8 yrs</button>
-                <button type="button" data-age="9-12 years (Pre-Teens)" class="age-pill px-2.5 py-2 rounded-xl text-xs font-bold border border-white/20 text-white hover:bg-white/10 transition">🌟 9–12 yrs</button>
-              </div>
-            </div>
-
-            <div class="relative">
-              <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">Moral Lesson</label>
-              <input type="hidden" id="moral-value" value="Kindness and helping friends">
-              <button type="button" id="moral-dropdown-btn" class="w-full px-4 py-2.5 sm:py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-blue-300/30 text-white flex items-center justify-between text-sm transition">
-                <span id="moral-display" class="flex items-center gap-2 truncate">💖 Kindness & Helping Others</span>
-                <span class="text-xs opacity-75 shrink-0 ml-1">▼</span>
-              </button>
-
-              <div id="moral-menu" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-30 dropdown-menu-animate text-gray-800 text-sm space-y-1">
-                <div class="moral-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="Kindness and helping friends">
-                  <span>💖</span> <span>Kindness & Helping Others</span>
-                </div>
-                <div class="moral-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="Honesty and telling the truth">
-                  <span>🌟</span> <span>Honesty & Truth</span>
-                </div>
-                <div class="moral-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="Sharing and generosity">
-                  <span>🎁</span> <span>Sharing & Generosity</span>
-                </div>
-                <div class="moral-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="Courage to overcome fears">
-                  <span>🦁</span> <span>Courage & Bravery</span>
-                </div>
-                <div class="moral-option p-2.5 rounded-xl hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2 font-medium" data-value="Teamwork makes the dream work">
-                  <span>🤝</span> <span>Teamwork & Cooperation</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-blue-200 mb-1">Extra Details (Optional)</label>
-              <textarea id="extra-input" rows="2" placeholder="e.g. He carries a leaf backpack..." class="w-full px-4 py-2 rounded-2xl bg-white/10 border border-blue-300/30 text-white placeholder-blue-300 focus:bg-white focus:text-gray-900 focus:outline-hidden transition text-sm resize-none"></textarea>
-            </div>
-
-            <button id="generate-btn" type="submit" class="btn-3d-amber w-full py-3.5 sm:py-4 rounded-2xl text-amber-950 font-display font-bold text-base sm:text-lg shadow-xl uppercase tracking-wide">
-              ✨ Make Magical Story
-            </button>
-          </form>
-        </div>
-
-        <div class="mt-4 pt-3 border-t border-blue-400/20 text-[11px] text-blue-200 flex items-center justify-between">
-          <span>🛡️ Safety by Design Protected</span>
-          <span>Google Gemini Flash AI</span>
+          <span class="font-heading text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-500 via-purple-600 to-indigo-600 bg-clip-text text-transparent">WonderTales</span>
+          <span class="hidden sm:inline-block ml-2 text-xs font-bold px-2.5 py-1 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 rounded-full uppercase tracking-wider">Kids Club</span>
         </div>
       </div>
 
-      <div class="lg:col-span-7 bg-white dark:bg-[#151c38] p-5 sm:p-10 flex flex-col justify-center rounded-3xl lg:rounded-none lg:rounded-l-[3.5rem] shadow-inner transition-colors duration-300 mt-2 lg:mt-0">
+      <!-- Controls -->
+      <div class="flex items-center space-x-3">
         
-        <div id="empty-placeholder" class="py-6 px-2 sm:px-4">
-          <div class="max-w-md mx-auto text-center space-y-4">
-            
-            <div class="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto">
-              <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400 flex items-center justify-center text-4xl sm:text-5xl mx-auto shadow-md animate-float-gentle">
-                📖
-              </div>
-              <div class="absolute -top-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-400 text-white flex items-center justify-center text-xs sm:text-sm shadow animate-pulse">
-                ✨
-              </div>
-            </div>
+        <!-- Voice Dropdown -->
+        <div class="relative hidden md:block">
+          <select id="voiceSelect" class="input-theme text-sm font-bold rounded-2xl px-4 py-2.5 border-2 border-purple-100 bg-purple-50/50 text-purple-900 dark:text-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-400">
+            <option value="">🎙️ Warm Teacher Voice (Auto)</option>
+          </select>
+        </div>
 
-            <div>
-              <h3 class="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Your Storybook Awaits!</h3>
-              <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1.5 leading-relaxed">
-                Choose your hero on the left or tap <strong>Surprise Me!</strong> to weave an AI bedtime tale with warm narration and classroom questions.
-              </p>
-            </div>
+        <!-- Bedtime Sun/Moon Toggle -->
+        <button id="themeToggleBtn" aria-label="Toggle bedtime theme" class="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 text-amber-500 dark:text-amber-300 border-2 border-amber-100 dark:border-slate-700 flex items-center justify-center text-xl shadow-sm hover:scale-105 active:scale-95 transition-all">
+          <i id="themeIcon" class="fa-solid fa-sun"></i>
+        </button>
 
-            <div class="grid grid-cols-3 gap-2 pt-2">
-              <div class="p-2.5 sm:p-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-700/30 text-center">
-                <span class="text-lg sm:text-xl block mb-0.5">🔊</span>
-                <span class="text-[10px] sm:text-[11px] font-bold text-amber-900 dark:text-amber-300">Read Aloud</span>
-              </div>
-              <div class="p-2.5 sm:p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200/60 dark:border-indigo-700/30 text-center">
-                <span class="text-lg sm:text-xl block mb-0.5">💡</span>
-                <span class="text-[10px] sm:text-[11px] font-bold text-indigo-900 dark:text-indigo-300">Vocab Explorer</span>
-              </div>
-              <div class="p-2.5 sm:p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-700/30 text-center">
-                <span class="text-lg sm:text-xl block mb-0.5">🗣️</span>
-                <span class="text-[10px] sm:text-[11px] font-bold text-emerald-900 dark:text-emerald-300">Teacher Chat</span>
-              </div>
-            </div>
+        <!-- Safety & Privacy Modal -->
+        <button id="privacyBtn" title="Privacy by Design" class="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 text-emerald-500 border-2 border-emerald-100 dark:border-slate-700 flex items-center justify-center text-base shadow-sm hover:scale-105 transition-all">
+          <i class="fa-solid fa-shield-heart"></i>
+        </button>
 
+        <!-- Settings (Parental Math Gated) -->
+        <button id="settingsBtn" title="Settings" class="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-base shadow-sm hover:scale-105 transition-all">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- LEFT: STORY STUDIO FORM -->
+      <div id="storyStudioCard" class="lg:col-span-5 bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-purple-100 dark:border-slate-700/80 bg-card-theme">
+        
+        <div class="flex items-center space-x-3 mb-6">
+          <span class="w-10 h-10 rounded-2xl bg-amber-400 text-white flex items-center justify-center font-heading font-bold text-lg shadow-md">1</span>
+          <div>
+            <h2 class="font-heading text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white">Create Your Story</h2>
+            <p class="text-xs sm:text-sm text-slate-400 dark:text-slate-400 font-semibold">Tell us what you'd like to explore today!</p>
           </div>
         </div>
 
-        <div id="loading-card" class="hidden text-center py-12 sm:py-16">
-          <div class="text-5xl sm:text-6xl animate-bounce mb-3">🪄</div>
-          <h3 class="font-display text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Weaving Magic Words...</h3>
-          <p id="loading-quote" class="text-amber-600 dark:text-amber-400 text-xs sm:text-sm font-semibold mt-2">Asking the forest creatures for story ideas...</p>
-        </div>
-
-        <article id="story-card" class="hidden space-y-5 sm:space-y-6">
+        <form id="storyForm" class="space-y-5">
           
-          <div class="flex flex-wrap items-center justify-between gap-2 pb-3.5 border-b border-gray-100 dark:border-gray-800">
-            <div class="flex items-center space-x-1.5 sm:space-x-2">
-              <button id="play-audio-btn" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition">🔊 Listen</button>
-              <button id="pause-audio-btn" class="hidden px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-amber-600 text-white font-bold text-xs shadow-sm transition">⏸️ Pause</button>
-              <button id="stop-audio-btn" class="px-2 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl">⏹️</button>
-              
-              <select id="voice-select" class="px-2 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 dark:text-white max-w-[110px] sm:max-w-[140px] truncate" title="Choose Voice">
-                <option value="">Default Voice</option>
-              </select>
+          <!-- Child's Name -->
+          <div>
+            <label class="block text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mb-2">
+              👦 Child's Name
+            </label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-amber-500 text-lg">
+                <i class="fa-solid fa-child-reaching"></i>
+              </span>
+              <input type="text" id="childName" required placeholder="e.g. Leo, Maya, Oliver..." class="input-theme w-full pl-12 pr-4 py-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 text-slate-800 dark:text-white font-bold text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-amber-400">
+            </div>
+          </div>
 
-              <button id="speed-toggle-btn" class="px-2 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-300 text-xs font-semibold hover:bg-amber-200 transition">
-                🐢 Slow
+          <!-- Age Group -->
+          <div>
+            <label class="block text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mb-2">
+              🎂 Age Group
+            </label>
+            <div class="grid grid-cols-3 gap-3">
+              <button type="button" class="age-btn active py-3 px-2 rounded-2xl font-bold text-sm sm:text-base text-center" data-age="3-5">
+                🍼 3–5 yrs
+              </button>
+              <button type="button" class="age-btn py-3 px-2 rounded-2xl font-bold text-sm sm:text-base text-center" data-age="6-8">
+                🎒 6–8 yrs
+              </button>
+              <button type="button" class="age-btn py-3 px-2 rounded-2xl font-bold text-sm sm:text-base text-center" data-age="9-12">
+                🚀 9–12 yrs
               </button>
             </div>
+          </div>
 
-            <div class="flex items-center space-x-1">
-              <div class="flex bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5 text-xs">
-                <button id="font-decrease-btn" class="px-2 py-1 font-bold hover:bg-white dark:hover:bg-gray-700 rounded-lg dark:text-white">A-</button>
-                <button id="font-increase-btn" class="px-2 py-1 font-bold hover:bg-white dark:hover:bg-gray-700 rounded-lg dark:text-white">A+</button>
-              </div>
-              <button id="copy-story-btn" class="p-1.5 sm:p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs">📋</button>
-              <button id="download-story-btn" class="p-1.5 sm:p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs">📥</button>
-              <button id="print-story-btn" class="p-1.5 sm:p-2 rounded-xl bg-gray-50 dark:bg-gray-800 dark:text-white hover:bg-gray-100 border border-gray-200 dark:border-gray-700 text-xs" title="Print Worksheet">🖨️</button>
+          <!-- Modern Theme Picker -->
+          <div class="relative">
+            <label class="block text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mb-2">
+              🎨 Story Theme
+            </label>
+            <button type="button" id="themeDropdownBtn" class="input-theme w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 text-left font-bold text-slate-700 dark:text-slate-200 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-purple-400">
+              <span id="themeSelectedLabel">🌟 Adventure & Bravery</span>
+              <i class="fa-solid fa-chevron-down text-sm text-purple-400"></i>
+            </button>
+            <div id="themeDropdownMenu" class="custom-dropdown-menu bg-white dark:bg-slate-800 border-2 border-purple-100 dark:border-slate-700 p-2 space-y-1">
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-purple-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Adventure & Bravery">🌟 Adventure & Bravery</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-purple-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Friendship & Kindness">🤝 Friendship & Kindness</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-purple-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Curiosity & Discovery">🔍 Curiosity & Discovery</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-purple-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Magic & Fantasy">✨ Magic & Fantasy</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-purple-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Animal Adventures">🐾 Animal Adventures</div>
             </div>
           </div>
 
-          <div class="flex gap-2">
-            <span id="story-age-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">Age</span>
-            <span id="story-theme-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">Theme</span>
+          <!-- Modern World Picker -->
+          <div class="relative">
+            <label class="block text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mb-2">
+              🌍 Magical World
+            </label>
+            <button type="button" id="worldDropdownBtn" class="input-theme w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 text-left font-bold text-slate-700 dark:text-slate-200 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-teal-400">
+              <span id="worldSelectedLabel">🌳 Whispering Enchanted Forest</span>
+              <i class="fa-solid fa-chevron-down text-sm text-teal-400"></i>
+            </button>
+            <div id="worldDropdownMenu" class="custom-dropdown-menu bg-white dark:bg-slate-800 border-2 border-teal-100 dark:border-slate-700 p-2 space-y-1">
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-teal-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Whispering Enchanted Forest">🌳 Whispering Enchanted Forest</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-teal-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Cosmic Starlight Galaxy">🪐 Cosmic Starlight Galaxy</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-teal-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Deep Coral Ocean Kingdom">🐠 Deep Coral Ocean Kingdom</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-teal-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Fluffy Cloud City">☁️ Fluffy Cloud City</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-teal-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Cozy Backyard Jungle">🏡 Cozy Backyard Jungle</div>
+            </div>
           </div>
 
-          <h2 id="story-title" class="font-display text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight">Title</h2>
-          
-          <div id="story-paragraphs" class="space-y-3 sm:space-y-4 text-gray-800 dark:text-gray-200 leading-relaxed text-sm sm:text-lg"></div>
-
-          <div class="p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40">
-            <h4 class="font-display font-bold text-amber-950 dark:text-amber-300 text-xs sm:text-sm">🌟 Moral of the Story</h4>
-            <p id="story-moral" class="text-amber-900 dark:text-amber-200 text-xs sm:text-sm mt-1"></p>
+          <!-- Modern Moral Lesson Picker -->
+          <div class="relative">
+            <label class="block text-sm sm:text-base font-bold text-slate-700 dark:text-slate-300 mb-2">
+              💖 Moral Lesson
+            </label>
+            <button type="button" id="moralDropdownBtn" class="input-theme w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 text-left font-bold text-slate-700 dark:text-slate-200 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-rose-400">
+              <span id="moralSelectedLabel">💖 Helping Others & Empathy</span>
+              <i class="fa-solid fa-chevron-down text-sm text-rose-400"></i>
+            </button>
+            <div id="moralDropdownMenu" class="custom-dropdown-menu bg-white dark:bg-slate-800 border-2 border-rose-100 dark:border-slate-700 p-2 space-y-1">
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Helping Others & Empathy">💖 Helping Others & Empathy</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Honesty & Telling the Truth">💎 Honesty & Telling the Truth</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Never Giving Up (Perseverance)">🧗 Never Giving Up</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Sharing & Teamwork">🤝 Sharing & Teamwork</div>
+              <div class="dropdown-item px-4 py-3 rounded-xl cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-700 text-base font-bold" data-val="Courage in New Situations">🦁 Courage in New Situations</div>
+            </div>
           </div>
 
-          <div id="vocab-container">
-            <h4 class="font-display font-bold text-gray-800 dark:text-gray-200 text-xs mb-1.5">💡 Fun Words to Learn:</h4>
-            <div id="story-vocab" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
-          </div>
+          <!-- 3D GENERATE BUTTON -->
+          <button type="submit" id="generateBtn" class="btn-3d-amber w-full py-4 sm:py-5 rounded-2xl font-heading text-xl sm:text-2xl font-bold flex items-center justify-center space-x-3 tracking-wide mt-4">
+            <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+            <span>✨ Create My Story!</span>
+          </button>
+        </form>
+      </div>
 
-          <div id="questions-container" class="p-3.5 sm:p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/40">
-            <h4 class="font-display font-bold text-indigo-950 dark:text-indigo-300 text-xs sm:text-sm mb-1.5 flex items-center gap-1.5">
-              <span>🗣️</span> Teacher Discussion Questions:
-            </h4>
-            <ul id="discussion-questions" class="space-y-1.5 text-xs text-indigo-900 dark:text-indigo-200"></ul>
+      <!-- RIGHT: COLORFUL STORYBOOK READER -->
+      <div id="storybookCard" class="lg:col-span-7 bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-9 shadow-2xl border-2 border-amber-100 dark:border-slate-700/80 bg-card-theme min-h-[620px] flex flex-col justify-between">
+        
+        <!-- Header -->
+        <div class="border-b-2 border-slate-100 dark:border-slate-700/80 pb-4 mb-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="w-10 h-10 rounded-2xl bg-indigo-500 text-white flex items-center justify-center font-heading font-bold text-lg shadow-md">2</span>
+            <div>
+              <h2 class="font-heading text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white">Your Storybook</h2>
+              <p class="text-xs sm:text-sm text-slate-400 font-semibold">Your magical adventure unfolds here</p>
+            </div>
           </div>
-        </article>
+          <div id="audioControlsBar" class="hidden flex items-center space-x-2">
+            <button id="readAloudBtn" class="btn-3d-purple px-4 py-2.5 rounded-2xl text-sm font-bold flex items-center space-x-2">
+              <i class="fa-solid fa-volume-high"></i>
+              <span id="readAloudLabel">Read Aloud</span>
+            </button>
+            <button id="stopAudioBtn" class="px-3.5 py-2.5 rounded-2xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold hover:bg-rose-100 hover:text-rose-600 transition-all">
+              <i class="fa-solid fa-stop"></i>
+            </button>
+          </div>
+        </div>
 
+        <!-- Story Display Content -->
+        <div id="storyContentArea" class="flex-grow flex flex-col items-center justify-center text-center p-6 sm:p-12">
+          <div class="w-24 h-24 rounded-3xl bg-amber-100 dark:bg-slate-700/60 flex items-center justify-center text-4xl mb-5 text-amber-500 shadow-inner animate-pulse">
+            📚
+          </div>
+          <h3 class="font-heading text-2xl sm:text-3xl font-bold text-slate-700 dark:text-slate-100 mb-3">Your Storybook Awaits!</h3>
+          <p class="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-md font-semibold">
+            Choose a magical theme, world, and moral lesson on the left, then click <strong class="text-amber-500 font-bold">Create My Story</strong>!
+          </p>
+        </div>
+
+        <!-- Action Bar (Print, Save, Copy) -->
+        <div id="actionButtonsBar" class="hidden border-t-2 border-slate-100 dark:border-slate-700/80 pt-5 mt-6 flex flex-wrap gap-2.5 items-center justify-between">
+          <button id="saveStoryBtn" class="px-4 py-2.5 rounded-2xl bg-amber-50 dark:bg-slate-700 hover:bg-amber-100 text-amber-900 dark:text-amber-200 text-sm font-bold flex items-center space-x-2 transition-all">
+            <i class="fa-solid fa-bookmark text-amber-500 text-base"></i>
+            <span>Save to Favorites</span>
+          </button>
+          <div class="flex items-center space-x-2.5">
+            <button id="printStoryBtn" class="px-4 py-2.5 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-sm font-bold flex items-center space-x-2 transition-all">
+              <i class="fa-solid fa-print"></i>
+              <span>Print Coloring Book</span>
+            </button>
+            <button id="copyStoryBtn" class="px-4 py-2.5 rounded-2xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-sm font-bold flex items-center space-x-2 transition-all">
+              <i class="fa-solid fa-copy"></i>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- PARENTAL GATE MODAL -->
+  <div id="parentalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl border-2 border-amber-200 dark:border-slate-700">
+      <div class="text-center mb-5">
+        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl mx-auto mb-3">
+          🧮
+        </div>
+        <h3 class="font-heading text-2xl font-bold text-slate-800 dark:text-white">Grown-Ups Only</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-semibold">Please solve this puzzle to open settings:</p>
+      </div>
+      <div class="text-center font-bold text-2xl text-purple-600 dark:text-purple-400 my-4" id="parentalMathQuestion">7 + 8 = ?</div>
+      <input type="number" id="parentalMathAnswer" placeholder="Your answer" class="input-theme w-full text-center py-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 text-slate-800 dark:text-white font-bold text-xl mb-5 focus:outline-none focus:ring-2 focus:ring-amber-400">
+      <div class="flex space-x-3">
+        <button id="cancelParentalBtn" class="w-1/2 py-3 rounded-2xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-base">Cancel</button>
+        <button id="submitParentalBtn" class="w-1/2 py-3 rounded-2xl btn-3d-amber font-bold text-base">Verify</button>
       </div>
     </div>
   </div>
 
-  <div id="parent-gate-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4">
-      <div class="text-4xl">🔒</div>
-      <h3 class="font-display font-bold text-xl text-gray-900">Parents & Teachers Only</h3>
-      <p class="text-xs text-gray-500">Please solve this quick problem to access settings:</p>
-      <div id="gate-question" class="text-lg font-bold text-indigo-600 bg-indigo-50 py-2 rounded-xl">What is 4 + 7?</div>
-      <input id="gate-answer-input" type="number" placeholder="Enter answer..." class="w-full px-4 py-2 border rounded-xl text-center text-sm font-bold">
-      <div class="flex justify-end gap-2 pt-2">
-        <button id="close-gate-btn" class="px-4 py-2 text-xs text-gray-500 font-bold">Cancel</button>
-        <button id="verify-gate-btn" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow">Unlock</button>
+  <!-- SETTINGS MODAL -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-heading text-2xl font-bold text-slate-800 dark:text-white">Settings & Keys</h3>
+        <button id="closeSettingsBtn" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
+      </div>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 font-semibold">You can enter a custom Gemini API key here. It is saved securely inside your browser's local device storage.</p>
+      <input type="password" id="customApiKeyInput" placeholder="Paste custom Gemini API key (optional)" class="input-theme w-full px-4 py-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 text-slate-800 dark:text-white font-mono text-sm mb-4">
+      <div class="flex justify-end space-x-3">
+        <button id="saveCustomKeyBtn" class="btn-3d-amber px-6 py-3 rounded-2xl font-bold text-base">Save Key</button>
       </div>
     </div>
   </div>
 
-  <div id="settings-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b pb-2">
-        <h3 class="font-bold text-lg font-display">⚙️ Safety & API Settings</h3>
-        <button id="close-settings-btn" class="text-xl text-gray-500">&times;</button>
-      </div>
-      <p class="text-xs text-gray-600">Enter your Google Gemini API key. It is saved <strong>only inside your browser's private storage</strong>.</p>
-      <input id="api-key-input" type="password" placeholder="AQ... or AIzaSy..." class="w-full px-4 py-2 border rounded-xl text-sm font-mono">
-      <div class="flex items-center justify-between pt-2">
-        <button id="clear-api-key-btn" class="text-xs text-red-600 font-bold hover:underline">Reset / Clear Key</button>
-        <button id="save-api-key-btn" class="px-5 py-2 bg-amber-500 text-white rounded-xl text-xs font-bold shadow hover:bg-amber-600">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="safety-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b pb-2">
-        <h3 class="font-bold text-lg font-display text-emerald-800 flex items-center gap-2">
-          <span>🛡️</span> Safety & Privacy by Design
+  <!-- PRIVACY BY DESIGN MODAL -->
+  <div id="privacyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-emerald-200 dark:border-slate-700">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-heading text-2xl font-bold text-slate-800 dark:text-white flex items-center space-x-2">
+          <i class="fa-solid fa-shield-heart text-emerald-500"></i>
+          <span>Privacy by Design</span>
         </h3>
-        <button id="close-safety-btn" class="text-xl text-gray-500">&times;</button>
+        <button id="closePrivacyBtn" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✕</button>
       </div>
-      <div class="space-y-3 text-xs text-gray-600 leading-relaxed">
-        <p><strong>🔒 Zero Data Tracking:</strong> We do not track kids, collect names, or use advertising cookies (COPPA aligned).</p>
-        <p><strong>🏠 Local Storage:</strong> All created stories and API keys are stored entirely inside your browser on this device.</p>
-        <p><strong>👶 Safe Prompt Enforcer:</strong> System instructions strictly block violence, scary elements, and mature themes.</p>
+      <div class="space-y-3.5 text-sm text-slate-600 dark:text-slate-300 font-semibold">
+        <p>• <strong>Zero Tracking:</strong> No tracking cookies, no advertisements, and no personal profile collection.</p>
+        <p>• <strong>Strict Guardrails:</strong> Gemini 3.6 Flash enforces child-safety instructions strictly forbidding violence or scary content.</p>
+        <p>• <strong>Local Privacy:</strong> Saved stories and preferences remain entirely on your local device.</p>
       </div>
-      <button id="confirm-safety-btn" class="w-full py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold">Got it!</button>
     </div>
   </div>
-
-  <aside id="library-drawer" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 p-5 flex flex-col">
-    <div class="flex items-center justify-between pb-3 border-b">
-      <h3 class="font-bold text-lg font-display">📚 Saved Stories</h3>
-      <button id="close-library-btn" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
-    </div>
-    <div id="library-list" class="flex-1 overflow-y-auto py-4 space-y-2"></div>
-  </aside>
 
   <script type="module" src="app.js"></script>
 </body>
