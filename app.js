@@ -1,435 +1,283 @@
-import { GeminiService } from './api.js';
-import { SpeechService } from './speech.js';
-import { StorageService } from './storage.js';
+import { generateStory } from "./api.js";
+import { initSpeech, speakStory, pauseSpeech, resumeSpeech, stopSpeech, isSpeaking, isPaused, getVoices, setVoice } from "./speech.js";
+import { saveStoryToFavorites, getThemePreference, setThemePreference, getStoredApiKey, setStoredApiKey } from "./storage.js";
 
-document.addEventListener('DOMContentLoaded', () => {
-  let currentStory = null;
-  let selectedAge = '6-8 years (Early Readers)';
-  let currentFontSize = 18;
-  let speechRate = 0.85;
+document.addEventListener("DOMContentLoaded", () => {
+  initSpeech();
 
-  let gateNum1 = 0;
-  let gateNum2 = 0;
+  // State variables
+  let selectedAge = "3-5";
+  let selectedTheme = "Adventure & Bravery";
+  let selectedWorld = "Whispering Enchanted Forest";
+  let selectedMoral = "Helping Others & Empathy";
+  let currentStoryData = null;
+  let parentalSolution = null;
 
-  const form = document.getElementById('story-form');
-  const charInput = document.getElementById('character-input');
-  
-  const themeDropdownBtn = document.getElementById('theme-dropdown-btn');
-  const themeMenu = document.getElementById('theme-menu');
-  const themeDisplay = document.getElementById('theme-display');
-  const themeValue = document.getElementById('theme-value');
-  const customThemeInput = document.getElementById('custom-theme-input');
+  // DOM elements
+  const storyForm = document.getElementById("storyForm");
+  const generateBtn = document.getElementById("generateBtn");
+  const storyContentArea = document.getElementById("storyContentArea");
+  const audioControlsBar = document.getElementById("audioControlsBar");
+  const actionButtonsBar = document.getElementById("actionButtonsBar");
+  const readAloudBtn = document.getElementById("readAloudBtn");
+  const readAloudLabel = document.getElementById("readAloudLabel");
+  const stopAudioBtn = document.getElementById("stopAudioBtn");
+  const voiceSelect = document.getElementById("voiceSelect");
+  const themeToggleBtn = document.getElementById("themeToggleBtn");
+  const themeIcon = document.getElementById("themeIcon");
 
-  const moralDropdownBtn = document.getElementById('moral-dropdown-btn');
-  const moralMenu = document.getElementById('moral-menu');
-  const moralDisplay = document.getElementById('moral-display');
-  const moralValue = document.getElementById('moral-value');
-
-  const extraInput = document.getElementById('extra-input');
-  const surpriseBtn = document.getElementById('surprise-btn');
-
-  const emptyPlaceholder = document.getElementById('empty-placeholder');
-  const loadingCard = document.getElementById('loading-card');
-  const storyCard = document.getElementById('story-card');
-  const storyTitle = document.getElementById('story-title');
-  const storyParagraphs = document.getElementById('story-paragraphs');
-  const storyMoral = document.getElementById('story-moral');
-  const storyVocab = document.getElementById('story-vocab');
-  const discussionQuestionsList = document.getElementById('discussion-questions');
-  const storyAgeBadge = document.getElementById('story-age-badge');
-  const storyThemeBadge = document.getElementById('story-theme-badge');
-
-  const playAudioBtn = document.getElementById('play-audio-btn');
-  const pauseAudioBtn = document.getElementById('pause-audio-btn');
-  const stopAudioBtn = document.getElementById('stop-audio-btn');
-  const voiceSelect = document.getElementById('voice-select');
-  const speedToggleBtn = document.getElementById('speed-toggle-btn');
-
-  const fontIncreaseBtn = document.getElementById('font-increase-btn');
-  const fontDecreaseBtn = document.getElementById('font-decrease-btn');
-
-  const themeToggleBtn = document.getElementById('theme-toggle-btn');
-  const themeToggleIcon = document.getElementById('theme-toggle-icon');
-
-  const libraryDrawer = document.getElementById('library-drawer');
-  const openLibraryBtn = document.getElementById('open-library-btn');
-  const closeLibraryBtn = document.getElementById('close-library-btn');
-  const libraryList = document.getElementById('library-list');
-  const libraryCountBadge = document.getElementById('library-count-badge');
-
-  const settingsModal = document.getElementById('settings-modal');
-  const openSettingsBtn = document.getElementById('open-settings-btn');
-  const closeSettingsBtn = document.getElementById('close-settings-btn');
-  const apiKeyInput = document.getElementById('api-key-input');
-  const saveApiKeyBtn = document.getElementById('save-api-key-btn');
-  const clearApiKeyBtn = document.getElementById('clear-api-key-btn');
-  const apiKeyStatusBadge = document.getElementById('api-key-status-badge');
-
-  const safetyBadgeBtn = document.getElementById('safety-badge-btn');
-  const safetyModal = document.getElementById('safety-modal');
-  const closeSafetyBtn = document.getElementById('close-safety-btn');
-  const confirmSafetyBtn = document.getElementById('confirm-safety-btn');
-
-  const parentGateModal = document.getElementById('parent-gate-modal');
-  const gateQuestion = document.getElementById('gate-question');
-  const gateAnswerInput = document.getElementById('gate-answer-input');
-  const verifyGateBtn = document.getElementById('verify-gate-btn');
-  const closeGateBtn = document.getElementById('close-gate-btn');
-
-  const savedTheme = localStorage.getItem('wondertales_theme') || 'light';
-  if (savedTheme === 'dark') {
-    document.documentElement.classList.add('dark');
-    if (themeToggleIcon) themeToggleIcon.textContent = '🌙';
-  } else {
-    document.documentElement.classList.remove('dark');
-    if (themeToggleIcon) themeToggleIcon.textContent = '☀️';
-  }
-
-  themeToggleBtn?.addEventListener('click', () => {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('wondertales_theme', isDark ? 'dark' : 'light');
-    if (themeToggleIcon) themeToggleIcon.textContent = isDark ? '🌙' : '☀️';
-  });
-
-  themeDropdownBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    moralMenu?.classList.add('hidden');
-    themeMenu?.classList.toggle('hidden');
-  });
-
-  document.querySelectorAll('.theme-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      const val = opt.dataset.value;
-      if (themeValue) themeValue.value = val;
-      if (themeDisplay) themeDisplay.innerHTML = opt.innerHTML;
-      themeMenu?.classList.add('hidden');
-
-      if (val === 'custom') {
-        customThemeInput?.classList.remove('hidden');
-        customThemeInput?.focus();
-      } else {
-        customThemeInput?.classList.add('hidden');
-      }
-    });
-  });
-
-  moralDropdownBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    themeMenu?.classList.add('hidden');
-    moralMenu?.classList.toggle('hidden');
-  });
-
-  document.querySelectorAll('.moral-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      const val = opt.dataset.value;
-      if (moralValue) moralValue.value = val;
-      if (moralDisplay) moralDisplay.innerHTML = opt.innerHTML;
-      moralMenu?.classList.add('hidden');
-    });
-  });
-
-  document.addEventListener('click', () => {
-    themeMenu?.classList.add('hidden');
-    moralMenu?.classList.add('hidden');
-  });
-
-  SpeechService.initVoices((voices) => {
-    if (!voiceSelect) return;
-    voiceSelect.innerHTML = '';
-    voices.forEach((v, i) => {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = `${v.name.split(' ')[0]} (${v.lang})`;
-      voiceSelect.appendChild(opt);
-    });
-  });
-
-  voiceSelect?.addEventListener('change', (e) => {
-    SpeechService.setVoice(parseInt(e.target.value));
-  });
-
-  function updateApiKeyBadge() {
-    if (!apiKeyStatusBadge) return;
-    const key = StorageService.getApiKey();
-    if (key) {
-      apiKeyStatusBadge.className = 'px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-emerald-400/20 text-emerald-200 border border-emerald-400/40 whitespace-nowrap';
-      apiKeyStatusBadge.textContent = '✨ Live';
-    } else {
-      apiKeyStatusBadge.className = 'px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/40 whitespace-nowrap';
-      apiKeyStatusBadge.textContent = '⚡ Demo';
-    }
-  }
-
-  function updateLibraryUI() {
-    if (!libraryList || !libraryCountBadge) return;
-    const stories = StorageService.getStories();
-    libraryCountBadge.textContent = stories.length;
-    libraryList.innerHTML = '';
-
-    if (stories.length === 0) {
-      libraryList.innerHTML = '<p class="text-xs text-gray-400 text-center py-8">No saved stories yet.</p>';
-      return;
-    }
-
-    stories.forEach(s => {
-      const item = document.createElement('div');
-      item.className = 'p-3 rounded-xl border bg-amber-50/60 hover:bg-amber-100/60 cursor-pointer transition flex justify-between items-start';
-      item.innerHTML = `
-        <div class="pr-2">
-          <h4 class="font-bold text-xs text-gray-900 line-clamp-1">${s.title}</h4>
-          <p class="text-[11px] text-gray-500 mt-0.5">${s.theme} • ${s.ageGroup ? s.ageGroup.split(' ')[0] : ''}</p>
-        </div>
-        <button class="text-gray-400 hover:text-red-500 font-bold text-sm delete-btn">&times;</button>
-      `;
-
-      item.addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-btn')) return;
-        currentStory = s;
-        renderStory(s);
-        libraryDrawer?.classList.add('translate-x-full');
-      });
-
-      item.querySelector('.delete-btn')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const updated = StorageService.getStories().filter(story => story.id !== s.id);
-        localStorage.setItem('wondertales_stories', JSON.stringify(updated));
-        updateLibraryUI();
-      });
-
-      libraryList.appendChild(item);
-    });
-  }
-
-  document.querySelectorAll('.age-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.age-pill').forEach(b => {
-        b.classList.remove('btn-pill-active');
-        b.classList.add('border', 'border-white/20', 'text-white');
-      });
-      btn.classList.add('btn-pill-active');
-      btn.classList.remove('border', 'border-white/20', 'text-white');
+  // Age group selector (Fixed Permanent Amber Color)
+  document.querySelectorAll(".age-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".age-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
       selectedAge = btn.dataset.age;
     });
   });
 
-  surpriseBtn?.addEventListener('click', () => {
-    const presets = [
-      { char: 'Barnaby the Brave Bunny', theme: 'Enchanted Whispering Woods', themeIcon: '🌲', moral: 'Kindness and helping friends', moralIcon: '💖', extra: 'Carries a leaf backpack' },
-      { char: 'Cosmo the Star-Pup', theme: 'The Sparkling Milky Way', themeIcon: '🚀', moral: 'Courage to overcome fears', moralIcon: '🦁', extra: 'Glowing star paws' },
-      { char: 'Finley the Flying Fish', theme: 'The Great Coral Reef Kingdom', themeIcon: '🐠', moral: 'Sharing and generosity', moralIcon: '🎁', extra: 'Glides across sea waves' }
-    ];
-    const p = presets[Math.floor(Math.random() * presets.length)];
-    if (charInput) charInput.value = p.char;
-    if (themeValue) themeValue.value = p.theme;
-    if (themeDisplay) themeDisplay.innerHTML = `<span>${p.themeIcon}</span> <span>${p.theme}</span>`;
-    if (moralValue) moralValue.value = p.moral;
-    if (moralDisplay) moralDisplay.innerHTML = `<span>${p.moralIcon}</span> <span>${p.moral}</span>`;
-    if (extraInput) extraInput.value = p.extra;
-    customThemeInput?.classList.add('hidden');
+  // Dropdown helper function
+  function setupDropdown(btnId, menuId, labelId, onSelect) {
+    const btn = document.getElementById(btnId);
+    const menu = document.getElementById(menuId);
+    const label = document.getElementById(labelId);
+
+    btn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll(".custom-dropdown-menu").forEach(m => {
+        if (m !== menu) m.classList.remove("open");
+      });
+      menu?.classList.toggle("open");
+    });
+
+    menu?.querySelectorAll(".dropdown-item").forEach(item => {
+      item.addEventListener("click", () => {
+        const val = item.dataset.val;
+        if (label) label.textContent = item.textContent.trim();
+        menu.classList.remove("open");
+        onSelect(val);
+      });
+    });
+  }
+
+  setupDropdown("themeDropdownBtn", "themeDropdownMenu", "themeSelectedLabel", v => selectedTheme = v);
+  setupDropdown("worldDropdownBtn", "worldDropdownMenu", "worldSelectedLabel", v => selectedWorld = v);
+  setupDropdown("moralDropdownBtn", "moralDropdownMenu", "moralSelectedLabel", v => selectedMoral = v);
+
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".custom-dropdown-menu").forEach(m => m.classList.remove("open"));
   });
 
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    emptyPlaceholder?.classList.add('hidden');
-    storyCard?.classList.add('hidden');
-    loadingCard?.classList.remove('hidden');
-    SpeechService.stop();
-
-    let finalTheme = themeValue?.value || 'Enchanted Whispering Woods';
-    if (finalTheme === 'custom') {
-      finalTheme = customThemeInput?.value || 'Magical World';
-    }
-    const finalMoral = moralValue?.value || 'Kindness and helping friends';
-    const apiKey = StorageService.getApiKey();
-
-    try {
-      const story = await GeminiService.generateStory({
-        character: charInput ? charInput.value : 'Hero',
-        theme: finalTheme,
-        ageGroup: selectedAge,
-        moral: finalMoral,
-        extra: extraInput ? extraInput.value : ''
-      }, apiKey);
-
-      currentStory = story;
-      renderStory(story);
-      StorageService.saveStory(story);
-      updateLibraryUI();
-
-      if (typeof confetti === 'function') {
-        confetti({ particleCount: 75, spread: 65, origin: { y: 0.6 } });
-      }
-
-    } catch (err) {
-      alert('Generation error: ' + err.message);
-    } finally {
-      loadingCard?.classList.add('hidden');
-    }
-  });
-
-  function renderStory(story) {
-    if (!storyCard) return;
-    storyCard.classList.remove('hidden');
-    if (storyTitle) storyTitle.textContent = story.title;
-    if (storyAgeBadge) storyAgeBadge.textContent = story.ageGroup ? story.ageGroup.split(' ')[0] : 'Kids';
-    if (storyThemeBadge) storyThemeBadge.textContent = story.theme;
-    if (storyMoral) storyMoral.textContent = story.moral;
-
-    if (storyParagraphs) {
-      storyParagraphs.innerHTML = '';
-      storyParagraphs.style.fontSize = `${currentFontSize}px`;
-      story.paragraphs.forEach(p => {
-        const pEl = document.createElement('p');
-        pEl.className = 'bg-amber-50/50 dark:bg-gray-800/60 p-4 rounded-2xl border border-amber-100/70 dark:border-gray-700/50 shadow-xs';
-        pEl.textContent = p;
-        storyParagraphs.appendChild(pEl);
-      });
-    }
-
-    if (storyVocab) {
-      storyVocab.innerHTML = '';
-      (story.funVocabulary || []).forEach(v => {
-        const div = document.createElement('div');
-        div.className = 'p-2.5 bg-white dark:bg-gray-800 rounded-xl border border-indigo-100 dark:border-gray-700 shadow-xs';
-        div.innerHTML = `<strong>✨ ${v.word}</strong>: ${v.definition}`;
-        storyVocab.appendChild(div);
-      });
-    }
-
-    if (discussionQuestionsList) {
-      discussionQuestionsList.innerHTML = '';
-      (story.discussionQuestions || []).forEach(q => {
-        const li = document.createElement('li');
-        li.className = 'flex items-start gap-2 bg-white/70 dark:bg-gray-800/80 p-2.5 rounded-xl border border-indigo-100 dark:border-gray-700';
-        li.innerHTML = `<span>💬</span> <span>${q}</span>`;
-        discussionQuestionsList.appendChild(li);
-      });
+  // Bedtime Theme Switcher (Sun / Moon)
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+      themeIcon?.classList.replace("fa-sun", "fa-moon");
+    } else {
+      document.body.classList.remove("dark");
+      themeIcon?.classList.replace("fa-moon", "fa-sun");
     }
   }
 
-  speedToggleBtn?.addEventListener('click', () => {
-    if (speechRate === 0.85) {
-      speechRate = 1.05;
-      speedToggleBtn.textContent = '🐇 Normal';
-    } else {
-      speechRate = 0.85;
-      speedToggleBtn.textContent = '🐢 Slow';
-    }
+  applyTheme(getThemePreference());
+
+  themeToggleBtn?.addEventListener("click", () => {
+    const isDark = document.body.classList.contains("dark");
+    const newTheme = isDark ? "light" : "dark";
+    setThemePreference(newTheme);
+    applyTheme(newTheme);
   });
 
-  fontIncreaseBtn?.addEventListener('click', () => {
-    if (currentFontSize < 26 && storyParagraphs) {
-      currentFontSize += 2;
-      storyParagraphs.style.fontSize = `${currentFontSize}px`;
+  // Warm Teacher Voice population
+  setTimeout(() => {
+    const voices = getVoices();
+    if (voiceSelect && voices.length > 0) {
+      voiceSelect.innerHTML = `<option value="">🎙️ Warm Teacher Voice (Auto)</option>`;
+      voices.forEach((v, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.textContent = `${v.name} (${v.lang})`;
+        voiceSelect.appendChild(opt);
+      });
+      voiceSelect.addEventListener("change", (e) => {
+        setVoice(e.target.value === "" ? null : parseInt(e.target.value));
+      });
     }
-  });
+  }, 600);
 
-  fontDecreaseBtn?.addEventListener('click', () => {
-    if (currentFontSize > 14 && storyParagraphs) {
-      currentFontSize -= 2;
-      storyParagraphs.style.fontSize = `${currentFontSize}px`;
-    }
-  });
+  // Form Submission
+  storyForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const childName = document.getElementById("childName")?.value.trim();
+    if (!childName) return;
 
-  playAudioBtn?.addEventListener('click', () => {
-    if (!currentStory) return;
-    const text = `${currentStory.title}. ${currentStory.paragraphs.join(' ')}. The moral is: ${currentStory.moral}`;
-    SpeechService.rate = speechRate;
-    SpeechService.speak(text, 
-      () => { 
-        playAudioBtn.classList.add('hidden'); 
-        pauseAudioBtn?.classList.remove('hidden'); 
-      },
-      () => { 
-        playAudioBtn.classList.remove('hidden'); 
-        pauseAudioBtn?.classList.add('hidden'); 
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>✨ Weaving Magic...</span>`;
+    stopSpeech();
+
+    storyContentArea.innerHTML = `
+      <div class="py-20 text-center animate-pulse">
+        <div class="text-5xl mb-4">🪄</div>
+        <p class="font-heading text-2xl font-bold text-purple-600 dark:text-purple-300">Writing a magical adventure for ${childName}...</p>
+        <p class="text-sm text-slate-400 mt-2 font-semibold">Gathering playful words & heartwarming lessons...</p>
+      </div>
+    `;
+
+    try {
+      const story = await generateStory({
+        childName,
+        ageGroup: selectedAge,
+        theme: selectedTheme,
+        world: selectedWorld,
+        moralLesson: selectedMoral
+      });
+
+      currentStoryData = story;
+      renderStory(story, childName);
+
+      if (window.confetti) {
+        window.confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       }
+
+      audioControlsBar?.classList.remove("hidden");
+      actionButtonsBar?.classList.remove("hidden");
+    } catch (err) {
+      storyContentArea.innerHTML = `
+        <div class="py-12 text-center text-rose-500">
+          <div class="text-4xl mb-3">⚠️</div>
+          <h4 class="font-heading text-xl font-bold">Oops! Magic Hiccup</h4>
+          <p class="text-sm max-w-sm mx-auto mt-1 font-semibold">${err.message}</p>
+        </div>
+      `;
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i><span>✨ Create My Story!</span>`;
+    }
+  });
+
+  // Render Story with Larger, Readable Typography
+  function renderStory(story, childName) {
+    const paragraphsHtml = story.paragraphs.map(p => `
+      <p class="text-lg sm:text-xl leading-relaxed text-slate-800 dark:text-slate-100 mb-5 font-medium">${p}</p>
+    `).join("");
+
+    const vocabHtml = (story.funVocabulary || []).map(v => `
+      <span class="inline-block px-3.5 py-1.5 bg-amber-100 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 rounded-2xl text-sm font-bold mr-2 mb-2 shadow-sm border border-amber-200 dark:border-amber-800">
+        💡 ${v.word}: <span class="font-normal opacity-90">${v.meaning}</span>
+      </span>
+    `).join("");
+
+    const questionsHtml = (story.discussionQuestions || []).map(q => `
+      <li class="text-sm sm:text-base text-slate-700 dark:text-slate-200 mb-2 font-semibold">• ${q}</li>
+    `).join("");
+
+    storyContentArea.innerHTML = `
+      <div class="w-full text-left">
+        ${story.soundEffect ? `<div class="inline-block px-4 py-1.5 bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/50 dark:to-indigo-900/50 text-purple-700 dark:text-purple-200 rounded-full text-sm font-bold mb-4 shadow-sm">✨ ${story.soundEffect}</div>` : ""}
+        <h1 class="font-heading text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white mb-6">${story.title}</h1>
+        <div class="story-body mb-8">${paragraphsHtml}</div>
+        
+        <!-- Moral Lesson Banner -->
+        <div class="p-5 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 rounded-3xl border-2 border-amber-200 dark:border-amber-900/60 mb-6 shadow-sm">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 mb-1.5">🌱 Moral Lesson</div>
+          <p class="text-base sm:text-lg font-bold text-amber-900 dark:text-amber-100">${story.moral}</p>
+        </div>
+
+        ${vocabHtml ? `
+          <div class="mb-6">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Vocabulary Explorer</div>
+            <div class="flex flex-wrap">${vocabHtml}</div>
+          </div>
+        ` : ""}
+
+        ${questionsHtml ? `
+          <div class="p-5 bg-purple-50/70 dark:bg-slate-700/50 rounded-3xl border-2 border-purple-100 dark:border-slate-700 mb-2 shadow-sm">
+            <div class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-300 mb-2.5">Chat About the Story</div>
+            <ul class="list-none">${questionsHtml}</ul>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  }
+
+  // Audio Controls
+  readAloudBtn?.addEventListener("click", () => {
+    if (!currentStoryData) return;
+    if (isSpeaking()) {
+      pauseSpeech();
+      readAloudLabel.textContent = "Resume";
+      return;
+    }
+    if (isPaused()) {
+      resumeSpeech();
+      readAloudLabel.textContent = "Pause";
+      return;
+    }
+
+    const fullText = `${currentStoryData.title}. ${currentStoryData.paragraphs.join(" ")} The moral of the story: ${currentStoryData.moral}`;
+    speakStory(fullText, 
+      () => { readAloudLabel.textContent = "Pause"; },
+      () => { readAloudLabel.textContent = "Read Aloud"; }
     );
   });
 
-  pauseAudioBtn?.addEventListener('click', () => {
-    SpeechService.pause();
-    playAudioBtn?.classList.remove('hidden');
-    pauseAudioBtn.classList.add('hidden');
+  stopAudioBtn?.addEventListener("click", () => {
+    stopSpeech();
+    readAloudLabel.textContent = "Read Aloud";
   });
 
-  stopAudioBtn?.addEventListener('click', () => {
-    SpeechService.stop();
-    playAudioBtn?.classList.remove('hidden');
-    pauseAudioBtn?.classList.add('hidden');
-  });
-
-  document.getElementById('copy-story-btn')?.addEventListener('click', () => {
-    if (!currentStory) return;
-    navigator.clipboard.writeText(`${currentStory.title}\n\n${currentStory.paragraphs.join('\n\n')}\n\nMoral: ${currentStory.moral}`);
-    alert('Story copied to clipboard!');
-  });
-
-  document.getElementById('download-story-btn')?.addEventListener('click', () => {
-    if (!currentStory) return;
-    const content = `${currentStory.title}\n\n${currentStory.paragraphs.join('\n\n')}\n\nMoral: ${currentStory.moral}`;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${currentStory.title.replace(/\s+/g, '_')}.txt`;
-    a.click();
-  });
-
-  document.getElementById('print-story-btn')?.addEventListener('click', () => window.print());
-
-  openLibraryBtn?.addEventListener('click', () => {
-    updateLibraryUI();
-    libraryDrawer?.classList.remove('translate-x-full');
-  });
-
-  closeLibraryBtn?.addEventListener('click', () => {
-    libraryDrawer?.classList.add('translate-x-full');
-  });
-
-  openSettingsBtn?.addEventListener('click', () => {
-    gateNum1 = Math.floor(Math.random() * 8) + 2;
-    gateNum2 = Math.floor(Math.random() * 8) + 2;
-    if (gateQuestion) gateQuestion.textContent = `What is ${gateNum1} + ${gateNum2}?`;
-    if (gateAnswerInput) gateAnswerInput.value = '';
-    parentGateModal?.classList.remove('hidden');
-  });
-
-  closeGateBtn?.addEventListener('click', () => {
-    parentGateModal?.classList.add('hidden');
-  });
-
-  verifyGateBtn?.addEventListener('click', () => {
-    const ans = parseInt(gateAnswerInput.value);
-    if (ans === (gateNum1 + gateNum2)) {
-      parentGateModal?.classList.add('hidden');
-      if (apiKeyInput) apiKeyInput.value = StorageService.getApiKey();
-      settingsModal?.classList.remove('hidden');
-    } else {
-      alert('Incorrect answer. Settings are protected for parents & teachers.');
+  // Action Buttons
+  document.getElementById("saveStoryBtn")?.addEventListener("click", () => {
+    if (currentStoryData) {
+      saveStoryToFavorites(currentStoryData);
+      alert("Story saved to your device's favorites! 🌟");
     }
   });
 
-  closeSettingsBtn?.addEventListener('click', () => settingsModal?.classList.add('hidden'));
+  document.getElementById("printStoryBtn")?.addEventListener("click", () => window.print());
 
-  saveApiKeyBtn?.addEventListener('click', () => {
-    if (apiKeyInput) StorageService.saveApiKey(apiKeyInput.value);
-    settingsModal?.classList.add('hidden');
-    updateApiKeyBadge();
-    alert('API Key saved!');
+  document.getElementById("copyStoryBtn")?.addEventListener("click", () => {
+    if (!currentStoryData) return;
+    const text = `${currentStoryData.title}\n\n${currentStoryData.paragraphs.join("\n\n")}\n\nMoral: ${currentStoryData.moral}`;
+    navigator.clipboard.writeText(text);
+    alert("Story copied to clipboard! 📋");
   });
 
-  clearApiKeyBtn?.addEventListener('click', () => {
-    StorageService.saveApiKey('');
-    if (apiKeyInput) apiKeyInput.value = '';
-    updateApiKeyBadge();
-    alert('API Key cleared. Switched to Demo Mode.');
+  // Parental Gate & Settings
+  const parentalModal = document.getElementById("parentalModal");
+  const settingsModal = document.getElementById("settingsModal");
+  const privacyModal = document.getElementById("privacyModal");
+
+  document.getElementById("settingsBtn")?.addEventListener("click", () => {
+    const num1 = Math.floor(Math.random() * 8) + 2;
+    const num2 = Math.floor(Math.random() * 8) + 2;
+    parentalSolution = num1 + num2;
+    document.getElementById("parentalMathQuestion").textContent = `${num1} + ${num2} = ?`;
+    document.getElementById("parentalMathAnswer").value = "";
+    parentalModal?.classList.remove("hidden");
   });
 
-  safetyBadgeBtn?.addEventListener('click', () => safetyModal?.classList.remove('hidden'));
-  closeSafetyBtn?.addEventListener('click', () => safetyModal?.classList.add('hidden'));
-  confirmSafetyBtn?.addEventListener('click', () => safetyModal?.classList.add('hidden'));
+  document.getElementById("cancelParentalBtn")?.addEventListener("click", () => parentalModal?.classList.add("hidden"));
 
-  updateApiKeyBadge();
-  updateLibraryUI();
+  document.getElementById("submitParentalBtn")?.addEventListener("click", () => {
+    const ans = parseInt(document.getElementById("parentalMathAnswer")?.value);
+    if (ans === parentalSolution) {
+      parentalModal?.classList.add("hidden");
+      document.getElementById("customApiKeyInput").value = getStoredApiKey();
+      settingsModal?.classList.remove("hidden");
+    } else {
+      alert("Oops! That's not quite right. Try again!");
+    }
+  });
+
+  document.getElementById("closeSettingsBtn")?.addEventListener("click", () => settingsModal?.classList.add("hidden"));
+
+  document.getElementById("saveCustomKeyBtn")?.addEventListener("click", () => {
+    const key = document.getElementById("customApiKeyInput")?.value.trim();
+    setStoredApiKey(key);
+    settingsModal?.classList.add("hidden");
+    alert("Key saved locally! 🔒");
+  });
+
+  document.getElementById("privacyBtn")?.addEventListener("click", () => privacyModal?.classList.remove("hidden"));
+  document.getElementById("closePrivacyBtn")?.addEventListener("click", () => privacyModal?.classList.add("hidden"));
 });
