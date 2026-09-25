@@ -78,7 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  applyTheme(getThemePreference());
+  // Force light mode default unless explicitly dark
+  const currentTheme = getThemePreference();
+  applyTheme(currentTheme);
 
   themeToggleBtn?.addEventListener("click", () => {
     const isDark = document.body.classList.contains("dark");
