@@ -216,6 +216,77 @@ body.dark .nav-bar {
   background-color: rgba(15, 23, 42, 0.92) !important;
 }
 
+/* ====================================================
+   MOBILE UNIFORMITY & CENTER ALIGNMENT (< 640px)
+   ==================================================== */
+@media (max-width: 639px) {
+  /* Center top headers inside the cards */
+  #storyStudioCard > div.flex.items-center.justify-between,
+  #storybookCard > div.border-b-2 {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  #storyStudioCard .flex.items-center.space-x-3,
+  #storybookCard .flex.items-center.space-x-3 {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+  }
+
+  /* Make sure Surprise Me fits well */
+  #surpriseMeBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Center labels and form fields */
+  .card-label {
+    text-align: center;
+  }
+
+  /* Audio bar centered when shown */
+  #audioControlsBar {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Bottom actions bar (Save, Print, Copy) stacked & centered */
+  #actionButtonsBar {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #actionButtonsBar > button,
+  #actionButtonsBar > div {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #actionButtonsBar > div {
+    display: flex;
+    gap: 8px;
+  }
+
+  #actionButtonsBar > div button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Modals padding & width */
+  #historyModal > div,
+  #parentalModal > div,
+  #settingsModal > div,
+  #privacyModal > div {
+    margin: 12px;
+    width: calc(100% - 24px);
+  }
+}
+
 @media print {
   body { background: #fff !important; color: #000 !important; }
   nav, #storyStudioCard, #audioControlsBar, #actionButtonsBar, .no-print { display: none !important; }
