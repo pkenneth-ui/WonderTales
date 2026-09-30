@@ -5,6 +5,13 @@ let availableVoices = [];
 let selectedVoiceIndex = null;
 let currentSpeechRate = getSpeechSpeed();
 
+// Internal state tracking to fix browser desync
+let isExplicitlyPaused = false;
+let lastSpokenText = "";
+let lastOnStart = null;
+let lastOnEnd = null;
+let lastOnBoundary = null;
+
 export function initSpeech() {
   if (!("speechSynthesis" in window)) return;
   loadVoices();
@@ -64,16 +71,43 @@ export function speakStory(text, onStart, onEnd, onBoundary) {
   }
   stopSpeech();
 
+  // Save references for seamless resume if Chrome drops the utterance
+  lastSpokenText = text;
+  lastOnStart = onStart;
+  lastOnEnd = onEnd;
+  lastOnBoundary = onBoundary;
+  isExplicitlyPaused = false;
+
   currentUtterance = new SpeechSynthesisUtterance(text);
+  
+  // Attach to window to prevent Chrome V8 garbage collection
+  window._wonderTalesUtterance = currentUtterance;
+
   const voice = pickFriendlyVoice();
   if (voice) currentUtterance.voice = voice;
 
   currentUtterance.pitch = 1.08;
   currentUtterance.rate = currentSpeechRate;
 
-  if (onStart) currentUtterance.onstart = onStart;
-  if (onEnd) currentUtterance.onend = onEnd;
-  currentUtterance.onerror = () => { if (onEnd) onEnd(); };
+  currentUtterance.onstart = () => {
+    isExplicitlyPaused = false;
+    if (onStart) onStart();
+  };
+
+  currentUtterance.onend = () => {
+    isExplicitlyPaused = false;
+    window._wonderTalesUtterance = null;
+    currentUtterance = null;
+    if (onEnd) onEnd();
+  };
+
+  currentUtterance.onerror = (e) => {
+    console.warn("Speech error or cancelled:", e);
+    isExplicitlyPaused = false;
+    window._wonderTalesUtterance = null;
+    currentUtterance = null;
+    if (onEnd) onEnd();
+  };
 
   if (onBoundary) {
     currentUtterance.onboundary = (e) => {
@@ -85,28 +119,48 @@ export function speakStory(text, onStart, onEnd, onBoundary) {
 }
 
 export function pauseSpeech() {
-  if ("speechSynthesis" in window && speechSynthesis.speaking) {
-    speechSynthesis.pause();
-  }
+  if (!("speechSynthesis" in window)) return;
+  isExplicitlyPaused = true;
+  speechSynthesis.pause();
 }
 
 export function resumeSpeech() {
-  if ("speechSynthesis" in window && speechSynthesis.paused) {
+  if (!("speechSynthesis" in window)) return;
+
+  isExplicitlyPaused = false;
+
+  // 1. If the browser still has the utterance paused in queue
+  if (speechSynthesis.paused) {
     speechSynthesis.resume();
+    
+    // Chromium bug workaround: double-kick resume
+    setTimeout(() => {
+      if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+      }
+    }, 50);
+  } 
+  // 2. If Chrome canceled/dropped the utterance while paused, restart speaking
+  else if (!speechSynthesis.speaking && lastSpokenText) {
+    speakStory(lastSpokenText, lastOnStart, lastOnEnd, lastOnBoundary);
   }
 }
 
 export function stopSpeech() {
   if ("speechSynthesis" in window) {
+    isExplicitlyPaused = false;
     speechSynthesis.cancel();
+    window._wonderTalesUtterance = null;
     currentUtterance = null;
   }
 }
 
 export function isSpeaking() {
-  return "speechSynthesis" in window && speechSynthesis.speaking && !speechSynthesis.paused;
+  if (!("speechSynthesis" in window)) return false;
+  return speechSynthesis.speaking && !speechSynthesis.paused && !isExplicitlyPaused;
 }
 
 export function isPaused() {
-  return "speechSynthesis" in window && speechSynthesis.paused;
+  if (!("speechSynthesis" in window)) return false;
+  return isExplicitlyPaused || speechSynthesis.paused;
 }
