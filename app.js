@@ -174,11 +174,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Updated applyTheme to support both Tailwind and custom CSS
   function applyTheme(theme) {
     if (theme === "dark") {
+      document.documentElement.classList.add("dark");
       document.body.classList.add("dark");
       themeIcon?.classList.replace("fa-sun", "fa-moon");
     } else {
+      document.documentElement.classList.remove("dark");
       document.body.classList.remove("dark");
       themeIcon?.classList.replace("fa-moon", "fa-sun");
     }
@@ -187,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyTheme(getThemePreference());
 
   themeToggleBtn?.addEventListener("click", () => {
-    const isDark = document.body.classList.contains("dark");
+    const isDark = document.documentElement.classList.contains("dark") || document.body.classList.contains("dark");
     const newTheme = isDark ? "light" : "dark";
     setThemePreference(newTheme);
     applyTheme(newTheme);
@@ -217,6 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
     generateBtn.disabled = true;
     generateBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>✨ Weaving Magic...</span>`;
     stopSpeech();
+    resetAudioBtnUI();
 
     storyContentArea.innerHTML = `
       <div class="py-20 text-center animate-pulse">
@@ -265,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
     storyContentArea.innerHTML = `
       <div class="w-full text-left">
         ${story.soundEffect ? `<div class="inline-block px-4 py-1.5 bg-purple-100 dark:bg-purple-900/60 text-purple-900 dark:text-purple-200 rounded-full text-sm font-extrabold mb-4 shadow-sm border border-purple-200 dark:border-purple-700">✨ ${story.soundEffect}</div>` : ""}
-        <h1 class="font-heading text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">${story.title}</h1>
+        <h1 id="storyTitle" class="font-heading text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight">${story.title}</h1>
         <div class="story-body mb-8">${paragraphsHtml}</div>
         <div class="p-5 bg-amber-100/80 dark:bg-amber-950/60 rounded-3xl border-2 border-amber-300 dark:border-amber-800/80 mb-6 shadow-sm">
           <div class="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1.5">🌱 Moral Lesson</div>
@@ -277,15 +281,53 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
+  function resetAudioBtnUI() {
+    if (readAloudLabel) readAloudLabel.textContent = "Read Aloud";
+    const icon = readAloudBtn?.querySelector("i");
+    if (icon) icon.className = "fa-solid fa-volume-high";
+  }
+
+  // Audio Play / Pause / Resume controls (Fixed evaluation order)
   readAloudBtn?.addEventListener("click", () => {
     if (!currentStoryData) return;
-    if (isSpeaking()) { pauseSpeech(); readAloudLabel.textContent = "Resume"; return; }
-    if (isPaused()) { resumeSpeech(); readAloudLabel.textContent = "Pause"; return; }
+
+    // 1. If currently paused -> RESUME
+    if (isPaused()) {
+      resumeSpeech();
+      if (readAloudLabel) readAloudLabel.textContent = "Pause";
+      const icon = readAloudBtn.querySelector("i");
+      if (icon) icon.className = "fa-solid fa-pause";
+      return;
+    }
+
+    // 2. If currently speaking -> PAUSE
+    if (isSpeaking()) {
+      pauseSpeech();
+      if (readAloudLabel) readAloudLabel.textContent = "Resume";
+      const icon = readAloudBtn.querySelector("i");
+      if (icon) icon.className = "fa-solid fa-play";
+      return;
+    }
+
+    // 3. Otherwise -> START READING
     const fullText = `${currentStoryData.title}. ${currentStoryData.paragraphs.join(" ")} The moral: ${currentStoryData.moral}`;
-    speakStory(fullText, () => { readAloudLabel.textContent = "Pause"; }, () => { readAloudLabel.textContent = "Read Aloud"; });
+    speakStory(
+      fullText, 
+      () => { 
+        if (readAloudLabel) readAloudLabel.textContent = "Pause";
+        const icon = readAloudBtn.querySelector("i");
+        if (icon) icon.className = "fa-solid fa-pause";
+      }, 
+      () => { 
+        resetAudioBtnUI();
+      }
+    );
   });
 
-  stopAudioBtn?.addEventListener("click", () => { stopSpeech(); readAloudLabel.textContent = "Read Aloud"; });
+  stopAudioBtn?.addEventListener("click", () => { 
+    stopSpeech(); 
+    resetAudioBtnUI();
+  });
 
   document.getElementById("saveStoryBtn")?.addEventListener("click", () => {
     if (currentStoryData) { saveStoryToFavorites(currentStoryData); alert("Story saved to your device's favorites! 🌟"); }
@@ -319,6 +361,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const story = favorites[parseInt(card.dataset.index)];
           currentStoryData = story;
           renderStory(story);
+          resetAudioBtnUI();
           audioControlsBar?.classList.remove("hidden");
           actionButtonsBar?.classList.remove("hidden");
           historyModal?.classList.add("hidden");
