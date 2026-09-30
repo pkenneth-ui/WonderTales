@@ -1,7 +1,6 @@
 import { getStoredApiKey, getLanguagePreference, getStoryLength } from "./storage.js";
 
 const DEFAULT_API_KEY = "";
-
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 function getFallbackStory({ childName, ageGroup, theme, world, moralLesson, language }) {
