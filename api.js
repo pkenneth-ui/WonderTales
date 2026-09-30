@@ -1,4 +1,11 @@
-import { DEFAULT_API_KEY } from "./config.js";
+let DEFAULT_API_KEY = "";
+try {
+  const config = await import("./config.js");
+  DEFAULT_API_KEY = config.DEFAULT_API_KEY || "";
+} catch {
+  // config.js is optional
+}
+
 import { getStoredApiKey, getLanguagePreference, getStoryLength } from "./storage.js";
 
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
@@ -121,7 +128,18 @@ You MUST respond ONLY with a raw, valid JSON object (no markdown fences, no trip
     }
 
     const cleaned = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
-    return JSON.parse(cleaned);
+    const parsed = JSON.parse(cleaned);
+
+    return {
+      title: parsed.title || `${childName}'s Adventure in the ${world}`,
+      soundEffect: parsed.soundEffect || "✨ Sparkle!",
+      paragraphs: Array.isArray(parsed.paragraphs) && parsed.paragraphs.length > 0 
+        ? parsed.paragraphs 
+        : [`Once upon a time in the ${world}, ${childName} had an amazing adventure.`],
+      moral: parsed.moral || moralLesson,
+      funVocabulary: Array.isArray(parsed.funVocabulary) ? parsed.funVocabulary : [],
+      discussionQuestions: Array.isArray(parsed.discussionQuestions) ? parsed.discussionQuestions : []
+    };
   } catch (err) {
     console.warn("API request failed:", err.message, "— Using fallback story.");
     return getFallbackStory({ childName, ageGroup, theme, world, moralLesson, language });
