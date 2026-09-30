@@ -5,7 +5,6 @@ let availableVoices = [];
 let selectedVoiceIndex = null;
 let currentSpeechRate = getSpeechSpeed();
 
-// Internal state tracking to fix browser desync
 let isExplicitlyPaused = false;
 let lastSpokenText = "";
 let lastOnStart = null;
@@ -71,7 +70,6 @@ export function speakStory(text, onStart, onEnd, onBoundary) {
   }
   stopSpeech();
 
-  // Save references for seamless resume if Chrome drops the utterance
   lastSpokenText = text;
   lastOnStart = onStart;
   lastOnEnd = onEnd;
@@ -79,8 +77,6 @@ export function speakStory(text, onStart, onEnd, onBoundary) {
   isExplicitlyPaused = false;
 
   currentUtterance = new SpeechSynthesisUtterance(text);
-  
-  // Attach to window to prevent Chrome V8 garbage collection
   window._wonderTalesUtterance = currentUtterance;
 
   const voice = pickFriendlyVoice();
@@ -129,19 +125,14 @@ export function resumeSpeech() {
 
   isExplicitlyPaused = false;
 
-  // 1. If the browser still has the utterance paused in queue
   if (speechSynthesis.paused) {
     speechSynthesis.resume();
-    
-    // Chromium bug workaround: double-kick resume
     setTimeout(() => {
       if (speechSynthesis.paused) {
         speechSynthesis.resume();
       }
     }, 50);
-  } 
-  // 2. If Chrome canceled/dropped the utterance while paused, restart speaking
-  else if (!speechSynthesis.speaking && lastSpokenText) {
+  } else if (!speechSynthesis.speaking && lastSpokenText) {
     speakStory(lastSpokenText, lastOnStart, lastOnEnd, lastOnBoundary);
   }
 }
