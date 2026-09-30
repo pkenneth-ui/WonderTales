@@ -178,7 +178,6 @@ function initApp() {
     }
   });
 
-  // Syncs theme to both <html> (Tailwind) and <body> (custom CSS)
   function applyTheme(theme) {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
@@ -291,7 +290,6 @@ function initApp() {
     if (icon) icon.className = "fa-solid fa-volume-high";
   }
 
-  // Audio Play / Pause / Resume controls (Fixed: check isPaused FIRST)
   readAloudBtn?.addEventListener("click", () => {
     if (!currentStoryData) return;
 
@@ -457,7 +455,6 @@ function initApp() {
   document.getElementById("closePrivacyBtn")?.addEventListener("click", () => privacyModal?.classList.add("hidden"));
 }
 
-// Guaranteed execution: runs immediately if DOM is ready, or on event if still loading
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initApp);
 } else {
