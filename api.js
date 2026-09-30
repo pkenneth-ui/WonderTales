@@ -1,12 +1,6 @@
-let DEFAULT_API_KEY = "";
-try {
-  const config = await import("./config.js");
-  DEFAULT_API_KEY = config.DEFAULT_API_KEY || "";
-} catch {
-  // config.js is optional
-}
-
 import { getStoredApiKey, getLanguagePreference, getStoryLength } from "./storage.js";
+
+const DEFAULT_API_KEY = "";
 
 const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
