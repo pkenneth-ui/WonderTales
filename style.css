@@ -24,9 +24,6 @@ h1, h2, h3, h4, .font-heading {
   font-family: 'Fredoka', cursive, sans-serif;
 }
 
-/* ===================================================
-   APP CARDS & THEME CONTRAST
-   =================================================== */
 .app-card {
   background-color: #ffffff !important;
   border: 3px solid rgba(255, 255, 255, 0.9);
@@ -40,7 +37,6 @@ body.dark .app-card {
   color: #f8fafc;
 }
 
-/* Light Mode Headings (including h1 and storyTitle) */
 .app-card h1,
 .app-card h2,
 .app-card h3,
@@ -68,7 +64,6 @@ body.dark .app-card {
   color: #1e293b !important;
 }
 
-/* Dark Mode Headings & Text */
 body.dark .app-card h1,
 body.dark .app-card h2,
 body.dark .app-card h3,
@@ -96,7 +91,6 @@ body.dark .story-body {
   color: #f1f5f9 !important;
 }
 
-/* Inputs & Form Fields */
 .input-theme {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
@@ -115,9 +109,6 @@ body.dark .dropdown-trigger-text {
   color: #e2e8f0 !important;
 }
 
-/* ===================================================
-   BUTTONS
-   =================================================== */
 .btn-3d-amber {
   background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
   color: #ffffff !important;
@@ -159,7 +150,7 @@ body.dark .dropdown-trigger-text {
   background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
   color: #ffffff !important;
   border-bottom: 5px solid #065f46;
-  box-shadow: 0 6px 14px -2px rgba(109, 40, 217, 0.4);
+  box-shadow: 0 6px 14px -2px rgba(16, 185, 129, 0.4);
   transition: all 0.15s ease;
   cursor: pointer;
 }
@@ -203,7 +194,6 @@ body.dark .age-btn.active {
   border-color: #fbbf24 !important;
 }
 
-/* Dropdowns */
 .custom-dropdown-menu {
   display: none;
   position: absolute;
@@ -244,7 +234,6 @@ body.dark .custom-dropdown-menu .dropdown-item:hover {
   color: #ffffff !important;
 }
 
-/* Navbar */
 .nav-bar {
   background-color: rgba(255, 255, 255, 0.92) !important;
 }
@@ -252,7 +241,6 @@ body.dark .nav-bar {
   background-color: rgba(15, 23, 42, 0.92) !important;
 }
 
-/* Modals */
 .modal-box {
   background-color: #ffffff;
   color: #1e293b;
