@@ -29,7 +29,7 @@ import {
   setFontSizePreference
 } from "./storage.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+function initApp() {
   initSpeech();
 
   let selectedAge = "3-5";
@@ -160,9 +160,13 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedMoral = rMoral.val;
     selectedAge = rAge;
 
-    document.getElementById("themeSelectedLabel").textContent = rTheme.label;
-    document.getElementById("worldSelectedLabel").textContent = rWorld.label;
-    document.getElementById("moralSelectedLabel").textContent = rMoral.label;
+    const themeLabel = document.getElementById("themeSelectedLabel");
+    const worldLabel = document.getElementById("worldSelectedLabel");
+    const moralLabel = document.getElementById("moralSelectedLabel");
+
+    if (themeLabel) themeLabel.textContent = rTheme.label;
+    if (worldLabel) worldLabel.textContent = rWorld.label;
+    if (moralLabel) moralLabel.textContent = rMoral.label;
 
     document.querySelectorAll(".age-btn").forEach(b => {
       b.classList.remove("active");
@@ -174,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Updated applyTheme to support both Tailwind and custom CSS
+  // Syncs theme to both <html> (Tailwind) and <body> (custom CSS)
   function applyTheme(theme) {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
@@ -287,11 +291,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (icon) icon.className = "fa-solid fa-volume-high";
   }
 
-  // Audio Play / Pause / Resume controls (Fixed evaluation order)
+  // Audio Play / Pause / Resume controls (Fixed: check isPaused FIRST)
   readAloudBtn?.addEventListener("click", () => {
     if (!currentStoryData) return;
 
-    // 1. If currently paused -> RESUME
     if (isPaused()) {
       resumeSpeech();
       if (readAloudLabel) readAloudLabel.textContent = "Pause";
@@ -300,7 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 2. If currently speaking -> PAUSE
     if (isSpeaking()) {
       pauseSpeech();
       if (readAloudLabel) readAloudLabel.textContent = "Resume";
@@ -309,7 +311,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 3. Otherwise -> START READING
     const fullText = `${currentStoryData.title}. ${currentStoryData.paragraphs.join(" ")} The moral: ${currentStoryData.moral}`;
     speakStory(
       fullText, 
@@ -454,4 +455,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("privacyBtn")?.addEventListener("click", () => privacyModal?.classList.remove("hidden"));
   document.getElementById("closePrivacyBtn")?.addEventListener("click", () => privacyModal?.classList.add("hidden"));
-});
+}
+
+// Guaranteed execution: runs immediately if DOM is ready, or on event if still loading
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
